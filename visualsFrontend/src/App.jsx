@@ -12,7 +12,8 @@ import Orders from './pages/Orders'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Searchbar from './components/Searchbar'
- import { ToastContainer, toast } from 'react-toastify';
+import NewLogin from './pages/NewLogin'
+import { ToastContainer, toast } from 'react-toastify';
 
 const App = () => {
   return (
@@ -28,9 +29,9 @@ const App = () => {
         <Route path='/product/:productId' element={<Product/>} ></Route>
         <Route path='/cart' element={<Cart/>} ></Route>
         <Route path='/login' element={<Login/>} ></Route>
+        <Route path='/newlogin' element={<NewLogin/>} ></Route>
         <Route path='/place-order' element={<PlaceOrder/>} ></Route>
         <Route path='/orders' element={<Orders/>} ></Route>
-        
       </Routes>
     <Footer />
     </div>
