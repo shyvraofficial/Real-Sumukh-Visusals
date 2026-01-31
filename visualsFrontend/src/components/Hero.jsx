@@ -1,26 +1,104 @@
-import React from 'react'
+
+import React, { useEffect, useState } from 'react';
+import './Hero.css';
 import { assets } from '../assets/assets'
+import { FaGithub, FaLinkedin, FaTwitter, FaInstagram } from 'react-icons/fa'
+import { px } from 'framer-motion';
 
 const Hero = () => {
-    return ( 
-        <div className='flex flex-col sm:flex-row border border-gray-400'> 
-            {/* Hero Left Side */} 
-            <div className='w-full sm:w-1/2 flex items-center justify-center py-10 sm:py-0'> 
-                <div className='text-[#414141]'> 
-                    <div className='flex items-center gap-2'> 
-                        <p className='w-8 md:w-11 h-[2px] bg-[#414141]'></p> 
-                        <p className='font-medium text-sm md:text-base'>OUR BESTSELLERS</p> 
-                    </div> 
-                    <h1 className='prata-regular text-3xl sm:py-3 lg:text-5xl leading-relaxed'>Latest Arrivals</h1>
-                    <div className='flex items-center gap-2'>
-                        <p className='font-semibold text-sm md:text-base'>SHOP NOW</p>
-                        <p className='w-8 md:w-11 h-[1px] bg-[#414141]'></p>
-                    </div>
-                </div> 
-            </div> 
-            {/* Hero Right Side */}
-            <img className='w-full sm:w-1/2' src={assets.hero_img} alt="" />
-        </div> 
-    ) 
-} 
-export default Hero
+  const [imageError, setImageError] = useState(false);
+  const [animate, setAnimate] = useState(false);
+
+  // Use the image path from assets directly
+  const ronaldImage = assets.ronald_image;
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  const socials = [
+    { icon: FaGithub, link: 'https://github.com/', label: 'GitHub' },
+    { icon: FaLinkedin, link: 'https://linkedin.com/', label: 'LinkedIn' },
+    { icon: FaTwitter, link: 'https://twitter.com/', label: 'Twitter' },
+    { icon: FaInstagram, link: 'https://instagram.com/', label: 'Instagram' }
+  ];
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setAnimate(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  return (
+    <section className={`hero${animate ? ' hero-animate' : ''}`} id="home">
+      <div className="hero-split">
+        <div className="hero-left">
+          <div className="hero-left-inner">
+            <div className="hero-image-mobile-wrap">
+              {!imageError && ronaldImage ? (
+                <img
+                  src={ronaldImage}
+                  alt="Sumukh Hero"
+                  className="hero-image-mobile"
+                  onError={handleImageError}
+                />
+              ) : null}
+            </div>
+            <h1 className="hero-title">
+              Hello!&nbsp;
+               I'm Sumukh
+              a Video
+              Editor.
+            </h1>
+            <p className="hero-description">
+            I work with creators and personal brands to turn raw footage into engaging talking-head, fitness, and cinematic content that holds attention.
+            </p>
+            <div className="hero-buttons">
+              <a href="/contact" className="hero-btn primary">
+                Book a free call
+              </a>
+              <a href="/project" className="hero-btn secondary">
+                View project
+              </a>
+            </div>
+            <div className="hero-social">
+              {socials.map((social, idx) => (
+                <a
+                  key={idx}
+                  href={social.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-link "
+                  title={social.label}
+                  aria-label={social.label} 
+                >
+                  <social.icon />
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="hero-right">
+          <div className="hero-right-inner">
+            <div className="hero-image-animate">
+              {!imageError && ronaldImage ? (
+                <img
+                  src={ronaldImage}
+                  alt="Ronald - Web Developer"
+                  className="hero-image"
+                  onError={handleImageError}
+                />
+              ) : (
+                <div className="hero-image-placeholder">
+                  <p>Add your portrait image to src/assets/ronald-image.png (or .jpg)</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Hero;

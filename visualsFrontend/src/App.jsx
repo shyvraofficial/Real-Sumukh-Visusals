@@ -1,40 +1,64 @@
-import React from 'react'
-import { Route, Routes } from 'react-router-dom'
-import Home from './pages/Home'
+import React, { useEffect } from 'react'
+import { Route, Routes, useLocation } from 'react-router-dom'
+import Portfolio from './pages/Home'
 import Collection from './pages/Collection'
 import About from './pages/About'
-import Contact from './pages/Contact'
+import Contacts from './pages/Contacts'
 import Product from './pages/Product'
 import Cart from './pages/Cart'
 import Login from './pages/Login'
 import PlaceOrder from './pages/PlaceOrder'
 import Orders from './pages/Orders'
+import MyProfile from './pages/MyProfile'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsConditions from './pages/TermsConditions'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
-import Searchbar from './components/Searchbar'
 import NewLogin from './pages/NewLogin'
-import { ToastContainer, toast } from 'react-toastify';
+import FinishLogin from './pages/FinishLogin'
+import Notification from './components/Notification'
+import NotificationProvider from './context/NotificationContext'
 
 const App = () => {
+  const location = useLocation()
+  const isLoginPage = location.pathname === '/login' || location.pathname === '/newlogin' || location.pathname === '/finish-login'
+  
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
+
+  useEffect(() => {
+    const loginPaths = ['/login', '/newlogin', '/finish-login']
+    if (!loginPaths.includes(location.pathname)) {
+      const pathWithSearch = `${location.pathname}${location.search || ''}`
+      localStorage.setItem('lastVisitedPath', pathWithSearch)
+    }
+  }, [location.pathname, location.search])
+  
   return (
-    <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] '>
-      <ToastContainer />
-      <Navbar />
-      <Searchbar />
-      <Routes>
-        <Route path='/' element={<Home/>} ></Route>
-        <Route path='/collection' element={<Collection/>} ></Route>
-        <Route path='/about' element={<About/>} ></Route>
-        <Route path='/contact' element={<Contact/>} ></Route>
-        <Route path='/product/:productId' element={<Product/>} ></Route>
-        <Route path='/cart' element={<Cart/>} ></Route>
-        <Route path='/login' element={<Login/>} ></Route>
-        <Route path='/newlogin' element={<NewLogin/>} ></Route>
-        <Route path='/place-order' element={<PlaceOrder/>} ></Route>
-        <Route path='/orders' element={<Orders/>} ></Route>
-      </Routes>
-    <Footer />
-    </div>
+    <NotificationProvider>
+      <div style={{ paddingTop: isLoginPage ? '0px' : '80px' }}>
+        <Notification />
+        {!isLoginPage && <Navbar />}
+        <Routes>
+          <Route path='/' element={<Portfolio/>} ></Route>
+          <Route path='/collection' element={<Collection/>} ></Route>
+          <Route path='/about' element={<About/>} ></Route>
+          <Route path='/contact' element={<Contacts/>} ></Route>
+          <Route path='/product/:productId' element={<Product/>} ></Route>
+          <Route path='/cart' element={<Cart/>} ></Route>
+          <Route path='/login' element={<Login/>} ></Route>
+          <Route path='/newlogin' element={<NewLogin/>} ></Route>
+          <Route path='/finish-login' element={<FinishLogin />} />
+          <Route path='/place-order' element={<PlaceOrder/>} ></Route>
+          <Route path='/orders' element={<Orders/>} ></Route>
+          <Route path='/profile' element={<MyProfile/>} ></Route>
+          <Route path='/privacy' element={<PrivacyPolicy/>} ></Route>
+          <Route path='/terms' element={<TermsConditions/>} ></Route>
+        </Routes>
+        {!isLoginPage && <Footer />}
+      </div>
+    </NotificationProvider>
   )
 }
 

@@ -1,177 +1,137 @@
-// import { initializeApp } from "firebase/app";
-// import { getAuth, signInWithEmailAndPassword, signInWithPopup,createUserWithEmailAndPassword, GoogleAuthProvider,sendEmailVerification } from "firebase/auth"
-// const firebaseConfig = {
-//   apiKey: "AIzaSyDykX7dsfBtBLLJQZCoseKFiKUzKu4ezuo",
-//   authDomain: "sumukhvisuals.firebaseapp.com",
-//   projectId: "sumukhvisuals",
-//   storageBucket: "sumukhvisuals.firebasestorage.app",
-//   messagingSenderId: "139618548157",
-//   appId: "1:139618548157:web:7c59a12dd6c53dcaa6fad4",
-//   measurementId: "G-57QZQ6884V"
-// };
+import { initializeApp } from 'firebase/app';
+import {
+  getAuth,
+  GoogleAuthProvider,
+  OAuthProvider,
+  signInWithPopup,
+  signInWithEmailLink,
+  isSignInWithEmailLink
+} from 'firebase/auth';
 
-// const app = initializeApp(firebaseConfig);
-// const auth = getAuth(app);
-// const googleProvider = new GoogleAuthProvider();
-
-// const handleGoogleLogin = async (setError) => {
-//     try {
-//         const result = await signInWithPopup(auth, googleProvider);
-//         console.log('Google Sign-In:', result.user);
-//         setError('');
-//     } catch (err) {
-//         console.log(err);
-//         setError('Google Sign-In failed');
-//     }
-// }
-
-// const handleLogin = (e, setError) => {
-//     e.preventDefault();
-//     const email = e.target.email.value;
-//     const password = e.target.password.value;
-//     const auth = getAuth();
-
-//     signInWithEmailAndPassword(auth, email, password)
-//         .then((userCredential) => {
-//             // Signed in
-//             const user = userCredential.user;
-//             console.log(user);
-//             setError('');
-//             // You can redirect or do something else here
-//         })
-//         .catch((error) => {
-//             setError(error.message);
-//         });
-// };
-
-// const handleSignUp = (e, setError, setSuccess) => { // Add setSuccess parameter
-//     e.preventDefault();
-//     const email = e.target.email.value;
-//     const password = e.target.password.value;
-//     const confirmPassword = e.target.confirmPassword.value;
-
-//     if (password !== confirmPassword) {
-//         setError("Passwords do not match.");
-//         return;
-//     }
-
-//     const auth = getAuth();
-//     createUserWithEmailAndPassword(auth, email, password)
-//         .then((userCredential) => {
-//             // Signed up
-//             const user = userCredential.user;
-//             // Send verification email
-//             sendEmailVerification(auth.currentUser)
-//                 .then(() => {
-//                     // Email verification sent!
-//                     setSuccess('Account created! Please check your email to verify your account.');
-//                     setError('');
-//                 });
-//         })
-//         .catch((error) => {
-//             setSuccess('');
-//             setError(error.message);
-//         });
-// };
-
-
-// export { auth, googleProvider, handleGoogleLogin,handleSignUp,handleLogin }
-
-import { initializeApp } from "firebase/app";
-import { 
-    getAuth, 
-    signInWithEmailAndPassword, 
-    signInWithPopup, 
-    createUserWithEmailAndPassword, 
-    GoogleAuthProvider, 
-    sendEmailVerification,
-    signOut // Added signOut
-} from "firebase/auth";
-
+// Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDykX7dsfBtBLLJQZCoseKFiKUzKu4ezuo",
-  authDomain: "sumukhvisuals.firebaseapp.com",
-  projectId: "sumukhvisuals",
-  storageBucket: "sumukhvisuals.firebasestorage.app",
-  messagingSenderId: "139618548157",
-  appId: "1:139618548157:web:7c59a12dd6c53dcaa6fad4",
-  measurementId: "G-57QZQ6884V"
+  apiKey: 'AIzaSyDykX7dsfBtBLLJQZCoseKFiKUzKu4ezuo',
+  authDomain: 'sumukhvisuals.firebaseapp.com',
+  projectId: 'sumukhvisuals',
+  storageBucket: 'sumukhvisuals.firebasestorage.app',
+  messagingSenderId: '139618548157',
+  appId: '1:139618548157:web:7c59a12dd6c53dcaa6fad4',
+  measurementId: 'G-57QZQ6884V',
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+// 🔴 Google Provider with Account Selection
 const googleProvider = new GoogleAuthProvider();
+googleProvider.addScope('profile');
+googleProvider.addScope('email');
+googleProvider.setCustomParameters({
+  prompt: 'select_account'  // Force account selection popup
+});
 
-const handleGoogleLogin = async (setError) => {
-    try {
-        const result = await signInWithPopup(auth, googleProvider);
-        console.log('Google Sign-In:', result.user);
-        setError('');
-    } catch (err) {
-        console.log(err);
-        setError('Google Sign-In failed');
+// 🔴 Microsoft Provider with Account Selection
+const microsoftProvider = new OAuthProvider('microsoft.com');
+microsoftProvider.addScope('profile');  // 🔴 FIXED: addScope (singular)
+microsoftProvider.addScope('email');    // 🔴 FIXED: addScope (singular)
+microsoftProvider.setCustomParameters({
+  prompt: 'select_account'  // Force account selection popup
+});
+
+// 🔴 Apple Provider with Account Selection
+const appleProvider = new OAuthProvider('apple.com');
+appleProvider.addScope('email');  // 🔴 FIXED: addScope (singular)
+appleProvider.addScope('name');   // 🔴 FIXED: addScope (singular)
+appleProvider.setCustomParameters({
+  prompt: 'select_account'  // Force account selection popup
+});
+
+// 🔴 Generic Social Login (returns token)
+export const socialLogin = async (provider) => {
+  try {
+    console.log('Opening popup for provider:', provider.providerId);
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const idToken = await user.getIdToken();
+    console.log('Got token:', idToken);
+    return idToken;
+  } catch (error) {
+    if (error.code === 'auth/popup-closed-by-user') {
+      console.warn('User closed the popup');
+    } else {
+      console.error('Social login error:', error);
     }
-}
-
-const handleLogin = (e, setError) => {
-    e.preventDefault();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-
-    signInWithEmailAndPassword(auth, email, password)
-        .then(async (userCredential) => {
-            const user = userCredential.user;
-
-            // CHECK IF EMAIL IS VERIFIED
-            if (!user.emailVerified) {
-                setError("Please verify your email before logging in. Check your inbox.");
-                await signOut(auth); // Sign them out so they stay on the login page
-                return;
-            }
-
-            console.log("Logged in successfully:", user);
-            setError('');
-            // Optional: window.location.href = "/dashboard";
-        })
-        .catch((error) => {
-            setError("Invalid email or password.");
-        });
+    throw error;
+  }
 };
 
-const handleSignUp = (e, setError, setSuccess) => {
-    e.preventDefault();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-    const confirmPassword = e.target.confirmPassword.value;
-
-    if (password !== confirmPassword) {
-        setError("Passwords do not match.");
-        return;
-    }
-
-    createUserWithEmailAndPassword(auth, email, password)
-        .then(async (userCredential) => {
-            const user = userCredential.user;
-
-            // 1. Send verification email
-            await sendEmailVerification(user);
-
-            // 2. IMPORTANT: Sign the user out immediately!
-            // Firebase logs them in automatically after signup. 
-            // We sign them out so they are forced to verify and then log in manually.
-            await signOut(auth);
-
-            setSuccess('Account created! Please check your Gmail to verify your account before logging in.');
-            setError('');
-        })
-        .catch((error) => {
-            setSuccess('');
-            if (error.code === 'auth/email-already-in-use') {
-                setError("This email is already registered.");
-            } else {
-                setError(error.message);
-            }
-        });
+// 🔴 Google Login Handler
+export const handleGoogleLogin = async (setError) => {
+  try {
+    console.log('Google login started');
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+    const idToken = await user.getIdToken();
+    console.log('Google login successful:', user.email);
+    if (setError) setError('');
+    return idToken;
+  } catch (err) {
+    console.error('Google Login Error:', err);
+    const errorMessage = err.code === 'auth/popup-closed-by-user' 
+      ? 'Login cancelled' 
+      : 'Google Sign-In failed. ' + err.message;
+    if (setError) setError(errorMessage);
+    throw err;
+  }
 };
 
-export { auth, googleProvider, handleGoogleLogin, handleSignUp, handleLogin }
+// 🔴 Microsoft Login Handler
+export const handleMicrosoftLogin = async (setError) => {
+  try {
+    console.log('Microsoft login started');
+    const result = await signInWithPopup(auth, microsoftProvider);
+    const user = result.user;
+    const idToken = await user.getIdToken();
+    console.log('Microsoft login successful:', user.email);
+    if (setError) setError('');
+    return idToken;
+  } catch (err) {
+    console.error('Microsoft Login Error:', err);
+    const errorMessage = err.code === 'auth/popup-closed-by-user' 
+      ? 'Login cancelled' 
+      : 'Microsoft Sign-In failed. ' + err.message;
+    if (setError) setError(errorMessage);
+    throw err;
+  }
+};
+
+// 🔴 Apple Login Handler
+export const handleAppleLogin = async (setError) => {
+  try {
+    console.log('Apple login started');
+    const result = await signInWithPopup(auth, appleProvider);
+    const user = result.user;
+    const idToken = await user.getIdToken();
+    console.log('Apple login successful:', user.email);
+    if (setError) setError('');
+    return idToken;
+  } catch (err) {
+    console.error('Apple Login Error:', err);
+    const errorMessage = err.code === 'auth/popup-closed-by-user' 
+      ? 'Login cancelled' 
+      : 'Apple Sign-In failed. ' + err.message;
+    if (setError) setError(errorMessage);
+    throw err;
+  }
+};
+
+// Exports
+export {
+  auth,
+  googleProvider,
+  microsoftProvider,
+  appleProvider,
+  isSignInWithEmailLink,
+  signInWithEmailLink
+};

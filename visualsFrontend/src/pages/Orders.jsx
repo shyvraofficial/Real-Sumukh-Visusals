@@ -1,25 +1,26 @@
 
 import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext';
-import Title from '../components/title';
 import axios from 'axios';
-
+import { motion } from 'framer-motion';
+import './Orders.css'
 
 const Orders = () => {
-  const {backendUrl, token, currency} = useContext(ShopContext);
-
+  const { backendUrl, token, currency, navigate } = useContext(ShopContext);
   const [orderData, setOrderData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const loadOrderData = async () => {
-    try{
-      if(!token){
+    try {
+      setLoading(true);
+      if (!token) {
         return null
       }
-      const response = await axios.post(`${backendUrl}/api/order/userOrders`, {}, {headers: {token}})
-      if(response.data.success){
+      const response = await axios.post(`${backendUrl}/api/order/userOrders`, {}, { headers: { Authorization: `Bearer ${token}` } })
+      if (response.data.success) {
         let allOrderItems = []
-        response.data.orders.map((order)=>{
-          order.items.map((item)=>{
+        response.data.orders.map((order) => {
+          order.items.map((item) => {
             item['status'] = order.status
             item['payment'] = order.payment
             item['paymentMethod'] = order.paymentMethod
@@ -29,53 +30,148 @@ const Orders = () => {
           })
         })
         setOrderData(allOrderItems.reverse())
-        
       }
     }
-    catch(error){
-
+    catch (error) {
+      console.error(error)
+    }
+    finally {
+      setLoading(false)
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     loadOrderData()
   }, [token])
 
+  const getStatusClass = (status) => {
+    if (status && status.toLowerCase() === 'delivered') return 'delivered';
+    if (status && status.toLowerCase() === 'shipped') return 'shipped';
+    if (status && status.toLowerCase() === 'ready') return 'ready';
+    if (status && status.toLowerCase() === 'processing') return 'processing';
+    return '';
+  }
+
+  const handleDownload = async (productId) => {
+    try {
+      const response = await axios.post(`${backendUrl}/api/product/download`, 
+        { productId }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      console.log('Download response:', response.data);
+      
+      if (response.data.success) {
+        window.open(response.data.downloadLink, '_blank');
+      } else {
+        console.error('Download failed:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Download error:', error.response?.data || error.message);
+    }
+  }
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" }
+    }
+  }
+
+  if (!loading && orderData.length === 0) {
+    return (
+      <div className='orders-container'>
+        <div className='orders-header'>
+          <h1 className='orders-title'>MY ORDERS</h1>
+        </div>
+        <div className='empty-orders'>
+          <div className='empty-orders-icon'>📦</div>
+          <p className='empty-orders-text'>No orders yet</p>
+          <a href='/collection' className='continue-shopping'>Continue Shopping</a>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className='border-t pt-16'>
-      <div className='text-2xl'>
-        <Title text1 = {'MY'} text2 = {'ORDERS'}/>
+    <div className='orders-container'>
+      <div className='orders-header'>
+        <h1 className='orders-title'>MY PURCHASES</h1>
       </div>
-      <div>
-        {orderData.slice().map((item, index)=>(
-          <div key={index} className='py-4 border-b text-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
-            <div className='flex items-start gap-6 text-sm'>
-              <img className='w-16 sm:w-20' src={item.images[0].url} alt="" />
+
+      <motion.div
+        className='orders-list'
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {orderData.map((item, index) => (
+          <motion.div key={index} className='order-card' variants={itemVariants}>
+            {/* Order Header */}
+            <div className='order-header'>
               <div>
-              <p className='sm:text-base font-medium'>{item.name}</p>
-              <p className='text-xs text-gray-500 mt-1'>Order ID: {item.orderId}</p>
-              <div className='flex items-center gap-3 mt-1 text-base text-gray-700'>
-                <p>{currency}{item.price}</p>
-                <p>Quantity: {item.quantity}</p>
-                <p>Size: {item.size}</p>
+                <div className='order-id'>{item.orderId}</div>
+                <div className='order-date'>{new Date(item.date).toDateString()}</div>
               </div>
-              <p className='mt-1'>Date: <span className='text-gray-400'>{new Date(item.date).toDateString()}</span></p>
-              <p className='mt-1'>Payment: <span className='text-gray-400'>{item.paymentMethod}</span></p>
+              <div className={`status-badge ${getStatusClass(item.status)}`}>
+                <span className={`status-dot ${getStatusClass(item.status)}`}></span>
+                {item.status}
               </div>
             </div>
-            <div className='md:w-1/2 flex justify-between'>
-              <div className='flex items-center gap-2'>
-                <p className='min-w-2 h-2 rounded-full bg-green-500'></p>
-                <p className='text-sm md:text-base'>{item.status}</p>
+
+            {/* Order Items */}
+            <div className='order-items'>
+              <div className='order-item'>
+                <img
+                  src={item.images[0].url}
+                  alt={item.name}
+                  className='order-item-image'
+                />
+                <div className='order-item-details'>
+                  <p className='order-item-name'>{item.name}</p>
+                  <div className='order-item-specs'>
+                    <span>Qty: {item.quantity}</span>
+                  </div>
+                </div>
+                <div className='order-item-price'>
+                  {currency}{(item.price * item.quantity).toFixed(2)}
+                </div>
               </div>
-              <button onClick={loadOrderData} className='border px-4 py-2 text-sm font-medium rounded-sm'>Track Order</button>
             </div>
-          </div>
+
+            {/* Order Footer */}
+            <div className='order-footer'>
+              <div className='order-payment-method'>
+                Payment: <strong>{item.paymentMethod}</strong>
+              </div>
+              {item.downloadLink && (
+                <button 
+                  onClick={() => handleDownload(item._id)}
+                  className='download-button'
+                  title="Download digital product"
+                >
+                  📥 Download
+                </button>
+              )}
+            </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   )
 }
 
 export default Orders;
-

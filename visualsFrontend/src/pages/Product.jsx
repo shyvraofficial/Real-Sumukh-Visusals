@@ -1,16 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
+import { NotificationContext } from '../context/NotificationContext';
 import { assets } from '../assets/assets';
 import RelatedProducts from '../components/RelatedProducts';
-import { toast } from 'react-toastify';
+import './Product.css';
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, currency, addToCart } = useContext(ShopContext);
+  const { products, currency, addToCart, navigate } = useContext(ShopContext);
+  const { success } = useContext(NotificationContext);
   const [productData, setProductData] = useState(null);
   const [image, setImage] = useState(null);
-  const [size, setSize] = useState('');
+  const [quantity, setQuantity] = useState(1);
 
   const fetchProductData = () => {
     const product = products.find((item) => item._id === productId);
@@ -28,131 +30,125 @@ const Product = () => {
   }, [productId, products]);
 
   return productData ? (
-    <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100">
-      
-      {/* Product Section */}
-      <div className="flex flex-col sm:flex-row gap-12">
-
-        {/* Left Section: Images */}
-        <div className="flex-1 flex flex-col-reverse sm:flex-row gap-3">
-          
-          <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll max-h-[560px] justify-between sm:justify-normal sm:w-[18.7%] w-full gap-2 ">
-            {productData.images?.map((item, index) => (
-              <img
-                onClick={() => setImage(item)}
-                src={item.url}
-                key={index}
-                className={`w-[24%] sm:w-full flex-shrink-0 sm:mb-3 cursor-pointer border ${
-                  image?.url === item.url ? 'border-black' : 'border-gray-200'
-                }`}
-              />
-            ))}
+    <div className="product-page">
+      {/* Main Product Section */}
+      <div className="product-wrapper">
+        {/* Left Gallery Section */}
+        <div className="product-gallery-section">
+          {/* Main Image */}
+          <div className="main-image-container">
+            {image && (
+              <img src={image.url} alt={productData.name} className="main-image" />
+            )}
           </div>
 
-          {/* Main Image */}
-          <div className="w-full sm:w-[80%]">
-            {image && (
-              <img
-                src={image.url}
-                className="w-full h-auto border border-gray-200"
-                alt="Main Product"
-              />
-            )}
+          {/* Thumbnail Gallery */}
+          <div className="thumbnail-container">
+            {productData.images?.map((item, index) => (
+              <div
+                key={index}
+                className={`thumbnail-item ${image?.url === item.url ? 'active' : ''}`}
+                onClick={() => setImage(item)}
+              >
+                <img src={item.url} alt={`View ${index + 1}`} />
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Product info */}
-        <div className="flex-1">
-          <h1 className="font-medium text-2xl mt-2">{productData.name}</h1>
+        {/* Right Product Info Section */}
+        <div className="product-info-section">
+          {/* Title */}
+          <h1 className="product-title">{productData.name}</h1>
 
-          {/* Rating */}
-          <div className="flex items-center gap-1 mt-2">
-            <img src={assets.star_icon} className="w-3.5" />
-            <img src={assets.star_icon} className="w-3.5" />
-            <img src={assets.star_icon} className="w-3.5" />
-            <img src={assets.star_icon} className="w-3.5" />
-            <img src={assets.star_dull_icon} className="w-3.5" />
-            <p className="pl-2">122</p>
-          </div>
-
-          <p className="mt-5 text-3xl font-medium">
-            {currency} {productData.price}
-          </p>
-          <p className="mt-5 text-gray-500 md:w-4/5">{productData.description}</p>
-
-          {/* Sizes */}
-          <div className="flex flex-col gap-4 my-8">
-            <p>Select Size</p>
-            <div className="flex gap-2">
-              {productData.sizes?.map((item, index) => (
-                <button
-                  onClick={() => setSize(item)}
-                  key={index}
-                  className={`bg-gray-100 py-2 px-4 border ${
-                    item === size ? 'border-orange-500' : ''
-                  }`}
-                >
-                  {item}
-                </button>
-              ))}
+          {/* Rating and Price */}
+          <div className="rating-price-row">
+            <div className="price">
+              <span className="price-value">{currency} {productData.price}</span>
             </div>
           </div>
 
-          {/* Add to cart */}
-          <button
-            onClick={() => {
-              if (!size) return toast.error('Please select a size!');
-              addToCart(productData._id, size);
-              toast.success('Added to cart!');
-            }}
-            className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700"
-          >
-            ADD TO CART
-          </button>
+          {/* Description */}
+          <p className="product-description">{productData.description}</p>
 
-          <hr className="mt-8 sm:w-4/5" />
+          {/* Quantity Selection */}
+          <div className="quantity-selection">
+            <label className="selection-label">Quantity</label>
+            <div className="quantity-box">
+              <button
+                className="qty-btn"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              >
+                −
+              </button>
+              <input 
+                type="number" 
+                value={quantity} 
+                readOnly 
+                className="qty-input"
+              />
+              <button
+                className="qty-btn"
+                onClick={() => setQuantity(quantity + 1)}
+              >
+                +
+              </button>
+            </div>
+          </div>
 
-          <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1">
-            <p>100% Original product.</p>
-            <p>Cash on delivery is available on this product.</p>
-            <p>Easy return & exchange policy within 7 days.</p>
+          {/* Action Buttons */}
+          <div className="action-buttons">
+            <button
+              className="add-to-cart-btn"
+              onClick={async () => {
+                await addToCart(productData._id, quantity);
+                success('Item added to cart');
+              }}
+            >
+              ADD TO CART
+            </button>
+            <button className="buy-now-btn" onClick={async () => {
+              await addToCart(productData._id, quantity);
+              navigate('/cart');
+            }}>
+              BUY NOW
+            </button>
+          </div>
+
+          {/* Benefits */}
+          <div className="benefits-section">
+            <div className="benefit">
+              <span className="benefit-icon">✓</span>
+              <span className="benefit-text">Free Shipping on orders above $50</span>
+            </div>
+            <div className="benefit">
+              <span className="benefit-icon">✓</span>
+              <span className="benefit-text">Easy exchanges & returns</span>
+            </div>
+            <div className="benefit">
+              <span className="benefit-icon">✓</span>
+              <span className="benefit-text">Cash On Delivery Available</span>
+            </div>
+            <div className="benefit">
+              <span className="benefit-icon">✓</span>
+              <span className="benefit-text">Order Dispatches Under 24hrs</span>
+            </div>
           </div>
         </div>
-
       </div>
 
-      {/* Description */}
-      <div className="mt-20">
-        <div className="flex">
-          <b className="border px-5 py-3 text-sm">Description</b>
-          <p className="border px-5 py-3 text-sm">Reviews (122)</p>
-        </div>
-
-        <div className="flex flex-col gap-4 border px-6 py-6 text-sm text-gray-500">
-          <p>
-            An e-commerce website is an online platform that facilitates the buying and
-            selling of products or services over the internet. It serves as a virtual marketplace 
-            where businesses and individuals can showcase their products, interact with customers, 
-            and conduct transactions without the need for a physical presence. E-commerce websites have gained 
-            immense popularity due to their convenience, accessibility, and the 
-            global reach they offer.
-          </p>
-          <p>
-            E-commerce websites typically display products or services along
-            with detailed descriptions, images, prices, and any available
-            variations (e.g., sizes, colors). Each product usually has its own
-            dedicated page with relevant information.
-          </p>
-        </div>
+      {/* Related Products */}
+      <div className="related-section">
+        <RelatedProducts
+          category={productData.category}
+          subCategory={productData.subCategory}
+        />
       </div>
-
-      <RelatedProducts
-        category={productData.category}
-        subCategory={productData.subCategory}
-      />
     </div>
   ) : (
-    <div className="opacity-0"></div>
+    <div className="loading-state">
+      <p>Loading product...</p>
+    </div>
   );
 };
 

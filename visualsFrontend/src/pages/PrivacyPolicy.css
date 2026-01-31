@@ -1,0 +1,269 @@
+.privacy-page {
+  min-height: 100vh;
+  background: #f9f9f9;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.policy-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.policy-header {
+  background: #333;
+  color: white;
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.policy-header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 10px 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.last-updated {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  margin: 0 0 20px 0;
+  font-weight: 500;
+}
+
+.policy-intro {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  opacity: 0.95;
+  margin-top: 20px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.policy-body {
+  padding: 60px 40px;
+}
+
+.policy-section {
+  margin-bottom: 50px;
+}
+
+.policy-section:last-child {
+  margin-bottom: 0;
+}
+
+.policy-section h2 {
+  font-size: 1.4rem;
+  color: #333;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 3px solid #667eea;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.section-content {
+  margin-top: 15px;
+  color: #555;
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+
+.section-content p {
+  margin: 0 0 12px 0;
+}
+
+.content-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.content-list li {
+  padding: 10px 0 10px 25px;
+  position: relative;
+  color: #555;
+  line-height: 1.8;
+  margin-bottom: 8px;
+}
+
+.content-list li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #667eea;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.subsections {
+  margin-top: 20px;
+}
+
+.subsection {
+  margin-bottom: 25px;
+  padding-left: 0;
+}
+
+.subsection h3 {
+  font-size: 1.1rem;
+  color: #444;
+  margin: 0 0 12px 0;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.subsection p {
+  color: #555;
+  line-height: 1.8;
+  font-size: 0.95rem;
+  margin: 0 0 12px 0;
+  padding-left: 0;
+}
+
+.subsection-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.subsection-list li {
+  padding: 8px 0 8px 25px;
+  position: relative;
+  color: #555;
+  line-height: 1.8;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.subsection-list li:before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #764ba2;
+  font-weight: bold;
+}
+
+.policy-footer {
+  background: #f5f5f5;
+  padding: 30px 40px;
+  text-align: center;
+  border-top: 1px solid #eee;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.policy-footer a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.policy-footer a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .policy-header {
+    padding: 40px 25px;
+  }
+
+  .policy-header h1 {
+    font-size: 2rem;
+  }
+
+  .policy-body {
+    padding: 40px 25px;
+  }
+
+  .policy-footer {
+    padding: 25px 20px;
+  }
+
+  .policy-section h2 {
+    font-size: 1.2rem;
+  }
+
+  .subsection h3 {
+    font-size: 1rem;
+  }
+
+  .section-content,
+  .subsection p {
+    font-size: 0.9rem;
+  }
+
+  .content-list li,
+  .subsection-list li {
+    font-size: 0.9rem;
+    padding-left: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .privacy-page {
+    padding: 20px 15px;
+  }
+
+  .policy-wrapper {
+    border-radius: 4px;
+  }
+
+  .policy-header {
+    padding: 30px 20px;
+  }
+
+  .policy-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .policy-body {
+    padding: 30px 20px;
+  }
+
+  .policy-section {
+    margin-bottom: 35px;
+  }
+
+  .policy-section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+
+  .policy-footer {
+    padding: 20px 15px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .privacy-page {
+    background: white;
+    padding: 0;
+  }
+
+  .policy-wrapper {
+    box-shadow: none;
+  }
+
+  .policy-header {
+    background: white;
+    color: #333;
+    border-bottom: 2px solid #667eea;
+  }
+
+  .policy-header h1,
+  .policy-section h2 {
+    color: #333;
+  }
+}

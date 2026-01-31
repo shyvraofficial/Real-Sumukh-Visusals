@@ -1,87 +1,207 @@
-import React, { useContext, useState } from 'react'
-import {assets} from '../assets/assets.js'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+
+import React, { useContext, useState, useEffect, useMemo } from 'react';
+import { assets } from '../assets/assets.js';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext.jsx';
+import { NotificationContext } from '../context/NotificationContext.jsx';
+import { motion } from 'framer-motion';
+import './Navbar.css';
 
-const Navbar = () => {
-    const [visible,setVisible]=useState(false);
-    const {setShowSearch,getCartCount,token, setToken,setCartItems}=useContext(ShopContext);
-    const navigate = useNavigate();
-    const logout = () => {
-      navigate('/login')
-      localStorage.removeItem('token')
-      setToken('')
-      setCartItems({})  
-    }
+export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const { token, setToken, setCartItems, showSearch, setShowSearch, getCartCount, cartItems, products, cartCount, logout } = useContext(ShopContext);
+  const { success, error: showError } = useContext(NotificationContext);
+  const navigate = useNavigate();
+
+  const isLoggedIn = Boolean(token);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // If scrolling down more than 50px, hide navbar
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        setIsHidden(true);
+      } 
+      // If scrolling up, show navbar
+      else if (currentScrollY < lastScrollY) {
+        setIsHidden(false);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
+  const navItems = [
+    { label: 'Portfolio', to: '/' },
+    { label: 'Collection', to: '/collection' },
+    { label: 'About', to: '/about' },
+    { label: 'Contact', to: '/contact' },
+  ];
+
+  
+
   return (
-    <div className='flex items-center justify-between py-5 font-medium '>
-        <Link to='/'><img src={assets.logo} className='w-36' alt=''></img></Link>
-        <ul className='hidden sm:flex gap-5 text-sm text-gray-700'>
-            <li>
-                <NavLink to='/' className='flex flex-col items-center gap-1'>
-                    <p>HOME</p>
-                    <hr className='w-2/4 border-none h-1.5 bg-gray-700 hidden '></hr>
-                </NavLink>
-            </li>
-            <li>
-                <NavLink to='/collection' className='flex flex-col items-center gap-1'>
-                    <p>COLLECTION</p>
-                    <hr className='w-2/4 border-none h-1.5 bg-gray-700 hidden'></hr>
-                </NavLink>
-            </li>
-            <li>
-                <NavLink to='/about' className='flex flex-col items-center gap-1'>
-                    <p>ABOUT</p>
-                    <hr className='w-2/4 border-none h-1.5 bg-gray-700 hidden'></hr>
-                </NavLink>
-            </li>
-            <li>
-                <NavLink to='/contact' className='flex flex-col items-center gap-1'>
-                    <p>CONTACT</p>
-                    <hr className='w-2/4 border-none h-1.5 bg-gray-700 hidden'></hr>
-                </NavLink>
-            </li>
+    <nav className={`navbar ${isHidden ? 'navbar-hidden' : 'navbar-visible'}`}>
+      <div className="navbar-container">
+        {/* Logo */}
+        <Link to="/">
+          <img src={assets.logo} className="logo" alt="Logo" />
+        </Link>
+
+        {/* Desktop main links */}
+        <ul className="nav-links">
+          {navItems.map((item) => (
+            <motion.li
+              key={item.to}
+              whileHover={{ scale: 1.05, y: -1 }}
+              transition={{ duration: 0.15 }}
+            >
+              <NavLink to={item.to}>{item.label}</NavLink>
+            </motion.li>
+          ))}
         </ul>
-        
-        <div className="flex items-center gap-6">
-            <NavLink to='/collection'><img onClick={() => setShowSearch(true)} src={assets.search_icon} className="w-5 cursor-pointer" alt="Search" /></NavLink>
-        
-        <div className="group relative">
-          <img onClick={() => token ? null : navigate('/login')} className="w-5 cursor-pointer" src={assets.profile_icon} alt="Profile" />
-          {token && <div className="hidden group-hover:block absolute right-0 pt-4 bg-white shadow-md rounded">
-            <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
-              <p className="cursor-pointer hover:text-black">My Profile</p>
-              <p onClick={()=> navigate('/orders')} className="cursor-pointer hover:text-black">Orders</p>
-              <p onClick={logout} className="cursor-pointer hover:text-black">Logout</p>
-            </div>
-          </div>}
+
+        {/* Right side: search, cart, and auth */}
+        <div className="nav-right">
+          {/* Search icon */}
+          <img
+            onClick={() => {
+              setShowSearch(!showSearch);
+              navigate('/collection');
+            }}
+            src={assets.search_icon}
+            className="nav-icon search-icon"
+            alt="Search"
+          />
+
+          {/* Cart icon with count */}
+          <Link to="/cart" className="nav-cart">
+            <img src={assets.cart_icon} className="nav-icon cart-icon" alt="Cart" />
+            <span className="cart-count">{cartCount}</span>
+          </Link>
+
+          <div className="nav-auth">
+            {isLoggedIn ? (
+              <>
+                <button
+                  className="nav-auth-btn"
+                  onClick={() => navigate('/profile')}
+                >
+                  Profile
+                </button>
+                <button
+                  className="nav-auth-btn"
+                  onClick={() => navigate('/orders')}
+                >
+                  Purchases
+                </button>
+                <button
+                  className="nav-auth-btn nav-auth-logout"
+                  onClick={logout}
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                className="nav-auth-btn nav-auth-primary"
+                onClick={() => navigate('/login')}
+              >
+                Login
+              </button>
+            )}
+          </div>
+
+          {/* Mobile menu toggle */}
+          <img
+            onClick={() => setIsOpen(!isOpen)}
+            src={assets.menu_icon}
+            className="mobile-menu-btn"
+            alt="Menu"
+          />
         </div>
+      </div>
 
+      {/* Mobile menu */}
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 100 }}
+          className="mobile-menu"
+          style={{
+            background: '#131313',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 9999
+          }}
+        >
+          <div className="mobile-menu-header" onClick={() => setIsOpen(false)}>
+            <img src={assets.dropdown_icon} alt="Back" className="back-icon" />
+            <p>Back</p>
+          </div>
 
-            <Link to='/cart' className='relative'>
-                <img src={assets.cart_icon} className='w-5 min-w-5' alt='' ></img>  
-                <p className="absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">{getCartCount()}</p>
-            </Link>
-            <img onClick={()=>setVisible(true)} src={assets.menu_icon} className='w-5 cursor-pointer sm:hidden min-w-5' alt='' ></img> 
-        </div>
-       
-        <div className={`absolute  top-0 right-0 bottom-0 overflow-hidden z-20 bg-white opacity-1 transition-all ${visible ? 'w-full':'w-0'}`}>
-            <div className="flex flex-col text-gray-600">
-                <div onClick={() => setVisible(false)} className="flex items-center gap-4 p-3">
-                   <img src={assets.dropdown_icon} className="h-4 rotate-180" alt="" />
-                   <p className='cursor-pointer'>Back</p>
-                </div>
-            <NavLink onClick={()=>setVisible(false)} className='nav-item py-2 pl-6 border' to="/">HOME</NavLink>
-            <NavLink onClick={()=>setVisible(false)} className='nav-item py-2 pl-6 border' to="/collection">COLLECTION</NavLink>
-            <NavLink onClick={()=>setVisible(false)} className='nav-item py-2 pl-6 border' to="/about">ABOUT</NavLink>
-            <NavLink onClick={()=>setVisible(false)} className='nav-item py-2 pl-6 border' to="/contact">CONTACT</NavLink>
-            </div>
-        </div>
+          {/* Main links on mobile */}
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className="mobile-nav-item"
+              onClick={() => setIsOpen(false)}
+            >
+              {item.label}
+            </NavLink>
+          ))}
 
-
-    </div>
-
-  )
+          {/* Auth on mobile */}
+          {isLoggedIn ? (
+            <>
+              <NavLink
+                to="/profile"
+                className="mobile-nav-item"
+                onClick={() => setIsOpen(false)}
+              >
+                My Profile
+              </NavLink>
+              <NavLink
+                to="/orders"
+                className="mobile-nav-item"
+                onClick={() => setIsOpen(false)}
+              >
+                Purchases
+              </NavLink>
+              <p
+                className="mobile-nav-item mobile-nav-logout"
+                onClick={() => {
+                  logout();
+                  setIsOpen(false);
+                }}
+              >
+                Logout
+              </p>
+            </>
+          ) : (
+            <NavLink
+              to="/login"
+              className="mobile-nav-item mobile-nav-login"
+              onClick={() => setIsOpen(false)}
+            >
+              Login
+            </NavLink>
+          )}
+        </motion.div>
+      )}
+    </nav>
+  );
 }
-
-export default Navbar

@@ -1,0 +1,390 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-image-mobile-wrap {
+  display: none;
+}
+
+.hero-image-mobile {
+  display: none;
+  margin: 0 auto;
+  max-width: 350px;
+  width: 100%;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.hero-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.hero-left {
+  background: radial-gradient(1200px 900px at 15% 40%, rgba(255, 255, 255, 0.04) 0%, rgba(10, 10, 10, 0) 60%),
+    #131313;
+  position: relative;
+}
+
+.hero-right {
+  background: linear-gradient(180deg, #1a1a1a 0%, #131313 100%);
+  position:relative;
+  border-left: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.hero-left-inner {
+  /* matches the left-side padding/placement in screenshots */
+  padding: 100px 72px 88px;
+  max-width: 720px;
+}
+
+.hero-title {
+  font-size: clamp(42px, 8vw, 80px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -2px;
+  color: #ffffff;
+  margin-bottom: 32px;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.hero-name {
+  color: #ffffff;
+  position: relative;
+}
+
+.hero-description {
+  font-size: clamp(18px, 2.5vw, 22px);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 48px;
+  max-width: 700px;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 100px;
+  flex-wrap: wrap;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.hero-btn {
+  padding: 16px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+  border: 1px solid transparent;
+}
+
+.hero-btn.primary {
+  background: #ffffff;
+  color: #0a0a0a;
+}
+
+.hero-btn.primary:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+}
+
+.hero-btn.secondary {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hero-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.hero-social {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.social-link {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 32px;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 65px ;
+  height: 65px ;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.social-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
+}
+
+.hero-stats {
+  display: flex;
+  gap: 0;
+  margin-top: 50px;
+  flex-wrap: wrap;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.stat-item {
+  background: #f3f3f3;
+  padding: 20px 20px;
+  border-radius: 0;
+  border: none;
+  text-align: center;
+  flex: 1;
+  min-width: 100px;
+}
+
+.stat-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 42px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.hero-right-inner {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: flex-end; /* portrait sits on the bottom */
+  justify-content: center;
+  padding: 0;
+  overflow: hidden; /* we will scale the image slightly */
+}
+
+.hero-image {
+  /* Match Framer look: keep whole portrait visible, just bigger */
+  width: 100%;
+  position: relative;
+  height: 100%;
+  object-fit: cover;          /* no harsh crop */
+  object-position: center bottom;
+  transform-origin: center bottom;
+  display: block;
+}
+
+.hero-image-animate {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-self: stretch;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.hero-image-placeholder {
+  width: 100%;
+  max-width: 520px;
+  min-height: clamp(420px, 60vh, 640px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  text-align: center;
+  padding: 40px;
+  border-radius: 8px;
+}
+
+.hero-animate .hero-title {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.hero-animate .hero-description {
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+}
+
+.hero-animate .hero-buttons {
+  animation: fadeInUp 0.8s ease-out 0.4s forwards;
+}
+
+.hero-animate .hero-social {
+  animation: fadeInUp 0.8s ease-out 0.6s forwards;
+}
+
+.hero-animate .hero-stats {
+  animation: fadeInUp 0.8s ease-out 0.7s forwards;
+}
+
+.hero-animate .hero-image-animate {
+  animation: fadeInUp 0.8s ease-out 0.3s forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 900px) {
+ 
+  .hero-split {
+    grid-template-columns: 1fr;
+  }
+  .hero-image-mobile{
+    display: block;
+  }
+
+
+
+  .hero-image-mobile-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+ 
+
+  .hero-right {
+    display: none;
+  }
+
+  .hero-right-inner {
+    padding: 30px;
+    align-items: center;
+  }
+
+  .hero-image {
+    height: clamp(420px, 62vh, 560px);
+  }
+}
+
+
+
+@media (max-width: 640px) {
+  .hero-image-mobile {
+    max-width: 350px;
+    height: 450px;
+    object-fit: cover;
+  }
+
+
+
+  .hero-split {
+    height: 100%;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-left {
+    flex: 1; /* Makes the content area take up the remaining space */
+    display: flex;
+    align-items: center; /* Vertically centers your text */
+  }
+
+  .hero-left-inner {
+    padding: 40px ;
+    align-items: center;
+    width: 100%;
+  }
+ 
+
+
+}
+.hero-right-inner {
+  height: 100%;
+  width: 100%;
+  display: block; /* Changed from flex to allow top-down alignment */
+  overflow: hidden; 
+  position: relative;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  /* REMOVE position: fixed; it breaks the container alignment */
+  position: absolute; 
+  top: 0;
+  left: 0;
+  
+  /* CRUCIAL PART: */
+  object-fit: cover; 
+  object-position: center top; /* Keeps the head/top visible, crops the feet/bottom */
+  
+  display: block;
+}
+@media (max-width: 968px) {
+  .hero-social {
+    display: flex;
+    gap: 16px;
+    justify-content: center; /* This centers the icons horizontally */
+    width: 100%;            /* Ensures the container spans the full width */
+    margin: 20px auto 0;    /* Centers the container itself if it has a max-width */
+  }
+}
+@media (max-width: 890px) {
+  /* 1. Center the text for Title and Description */
+  .hero-left-inner {
+    padding: 40px 24px;
+    max-width: 100%;
+    text-align: center; /* This centers the H1 and P tags */
+  }
+
+  /* 2. Center the Flexbox containers (Buttons and Socials) */
+  .hero-buttons, 
+  .hero-social {
+    justify-content: center; /* This centers the button and icon rows */
+    margin-left: auto;
+    margin-right: auto;
+    
+  }
+  .hero-buttons{
+    margin-bottom: 60px;
+  }
+  
+  /* 3. Center the mobile image wrapper if it's not centered */
+  .hero-image-mobile-wrap {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .hero-image-mobile{
+    display: block !important;
+  }
+}

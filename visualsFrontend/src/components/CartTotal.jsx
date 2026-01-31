@@ -1,32 +1,80 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext'
-import Title from './title';
 
 const CartTotal = () => {
-    const {currency, delivery_fee, getCartAmount} = useContext(ShopContext);
-  return (
-    <div className='w-full'>
-        <div className='text-2xl'>
-            <Title text1={'CART'} text2={'TOTALS'}/>
+    const { currency, getCartAmount, cartItems, products, cartCount } = useContext(ShopContext)
+    const [cartBreakdown, setCartBreakdown] = useState([])
+
+    useEffect(() => {
+        const breakdown = []
+        for (const itemId in cartItems) {
+            const product = products.find((p) => p._id === itemId)
+            if (product) {
+                const quantity = cartItems[itemId]
+                if (quantity > 0) {
+                    breakdown.push({
+                        name: product.name,
+                        quantity: quantity,
+                        price: product.price,
+                        total: product.price * quantity
+                    })
+                }
+            }
+        }
+        setCartBreakdown(breakdown)
+    }, [cartItems, products])
+
+    const subtotal = getCartAmount()
+    const deliveryFee = 0
+    const total = subtotal + deliveryFee
+
+    return (
+        <div className='w-full'>
+            {/* Header */}
+            <div className='pb-3 mb-4 border-b-2 border-gray-200'>
+                <h2 className='text-lg sm:text-base md:text-xl font-bold text-gray-900'>Cart Summary</h2>
+                <p className='text-xs md:text-sm text-gray-600 mt-1'>{cartCount} item{cartCount !== 1 ? 's' : ''} in your order</p>
+            </div>
+            
+            {/* Item Breakdown */}
+            {cartBreakdown.length > 0 && (
+                <div className='mb-4 pb-4 border-b border-gray-200'>
+                    <h3 className='text-sm font-semibold text-gray-700 mb-2'>Items</h3>
+                    <div className='space-y-1'>
+                        {cartBreakdown.map((item, index) => (
+                            <div key={index} className='flex justify-between items-center text-xs md:text-sm'>
+                                <div className='flex-1'>
+                                    <p className='text-gray-800 font-medium truncate'>{item.name}</p>
+                                    <p className='text-gray-500 text-xs'>Qty: {item.quantity}</p>
+                                </div>
+                                <span className='font-semibold text-gray-900 whitespace-nowrap ml-2'>{currency}{item.total.toFixed(2)}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+            
+            {/* Price Breakdown */}
+            <div className='space-y-2 mb-4 pb-4 border-b border-gray-200'>
+                <div className='flex justify-between items-center text-sm'>
+                    <span className='text-gray-700'>Subtotal</span>
+                    <span className='text-gray-900 font-medium'>{currency}{subtotal.toFixed(2)}</span>
+                </div>
+            </div>
+            
+            {/* Total */}
+            <div className='bg-gray-50 w-full p-4'>
+                <div className='flex justify-between items-center mb-1'>
+                    <span className='text-xs text-gray-600'>You'll pay</span>
+                </div>
+                <div className='flex justify-between items-center'>
+                    <span className='text-base md:text-lg font-bold text-gray-900'>Total</span>
+                    <span className='text-lg md:text-xl font-bold text-gray-900'>{currency}{total.toFixed(2)}</span>
+                </div>
+                <p className='text-xs text-gray-500 mt-2 text-center'>Tax included where applicable</p>
+            </div>
         </div>
-        <div className='flex flex-col gap-2 mt-2 text-sm'>
-            <div className='flex justify-between'>
-                <p>Subtotal</p>
-                <p>{currency} {getCartAmount()}.00</p>
-            </div>
-            <hr />
-            <div className='flex justify-between'>
-                <p>Shipping Fee</p>
-                <p>{currency} {delivery_fee}.00</p>
-            </div>
-            <hr />
-            <div className='flex justify-between'>
-                <b>Total</b>
-                <p>{currency} {getCartAmount() === 0 ? 0 : getCartAmount() + delivery_fee}.00</p>
-            </div>
-        </div>
-    </div>
-  )
+    )
 }
 
 export default CartTotal

@@ -1,5 +1,6 @@
 import {v2 as cloudinary} from 'cloudinary';
 import productModel from '../models/productModel.js';
+import userModel from '../models/userModel.js';
 
 cloudinary.config({ 
     cloud_name: process.env.CLOUDINARY_NAME, 
@@ -10,7 +11,7 @@ cloudinary.config({
 // function for add product
 const addProduct = async (req, res) => {
     try {
-        const { name, description, price, category, subCategory, sizes, bestseller } = req.body;
+        const { name, description, price, category, subCategory, sizes, bestseller, downloadLink } = req.body;
 
         // ✅ Ensure req.files exists
         if (!req.files || Object.keys(req.files).length === 0) {
@@ -46,6 +47,7 @@ const addProduct = async (req, res) => {
             subCategory,
             sizes: JSON.parse(sizes),
             bestseller: bestseller === "true" ? true:false,
+            downloadLink: downloadLink || '',
             images: imagesUrl,
             date: Date.now(),
         };
@@ -78,7 +80,8 @@ const listProducts = async (req, res) => {
     // function for remove product
     const removeProduct = async (req, res) => {
         try {
-            const product = await productModel.findById(req.body.id);
+            const productId = req.body.id;
+            const product = await productModel.findById(productId);
     
             if (!product) {
                 return res.json({ success: false, message: "Product not found" });
@@ -91,8 +94,17 @@ const listProducts = async (req, res) => {
                 )
             );
     
+            // Remove product from all user carts by fetching and updating each user
+            const users = await userModel.find({});
+            for (let user of users) {
+                if (user.cartData && user.cartData[productId]) {
+                    delete user.cartData[productId];
+                    await user.save();
+                }
+            }
+    
             // Delete the product record
-            await productModel.findByIdAndDelete(req.body.id);
+            await productModel.findByIdAndDelete(productId);
     
             res.json({ success: true, message: "Product removed & images deleted" });
         }
@@ -115,4 +127,46 @@ const singleProduct = async (req, res) => {
     }
 }
 
-export { listProducts, addProduct, removeProduct, singleProduct }
+// Get download link (only for verified buyers)
+const getDownloadLink = async (req, res) => {
+    try {
+        const { productId } = req.body;
+        const userId = req.userId;
+
+        console.log('Download request - ProductID:', productId, 'UserID:', userId);
+
+        // Get the product
+        const product = await productModel.findById(productId);
+        if (!product) {
+            return res.json({ success: false, message: "Product not found" });
+        }
+        
+        if (!product.downloadLink) {
+            return res.json({ success: false, message: "Download not available for this product" });
+        }
+
+        // Import orderModel to verify purchase
+        const orderModel = (await import('../models/orderModel.js')).default;
+        
+        // Check if user has purchased this product
+        const order = await orderModel.findOne({
+            userId: userId,
+            'items._id': productId
+        });
+
+        console.log('Order found:', !!order);
+
+        if (!order) {
+            return res.status(403).json({ success: false, message: "You haven't purchased this product" });
+        }
+
+        console.log('Returning download link');
+        res.json({ success: true, downloadLink: product.downloadLink });
+    }
+    catch (error) {
+        console.log('Download error:', error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+export { listProducts, addProduct, removeProduct, singleProduct, getDownloadLink }

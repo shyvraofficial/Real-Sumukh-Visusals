@@ -1,63 +1,84 @@
 import userModel from "../models/userModel.js";
 
+// Helper to ensure user exists
+const getOrCreateUser = async (userId, email) => {
+    let user = await userModel.findById(userId);
+    if (!user) {
+        // Create user with Firebase UID as _id
+        user = await userModel.create({
+            _id: userId,
+            email: email,
+            name: email.split('@')[0],
+            cartData: {}
+        });
+    }
+    return user;
+};
 
-// add products to user cart
 const addToCart = async (req, res) => {
-    try{
-        const { userId, itemId, size } = req.body;
+    try {
+        const { userId, userEmail, itemId, quantity = 1 } = req.body;
+
+        await getOrCreateUser(userId, userEmail); // Ensure user exists
         const userData = await userModel.findById(userId);
-        let cartData = await userData.cartData;
-        if(cartData[itemId]){
-            if(cartData[itemId][size]){
-                cartData[itemId][size] += 1;
-            }
-            else{
-                cartData[itemId][size] = 1;
-            }
-        }
-        else{
-            cartData[itemId] = {};
-            cartData[itemId][size] = 1;
-        }
-        await userModel.findByIdAndUpdate(userId, {cartData})
-        res.json({success: true, message: "Product added to cart successfully"});
-    }
-    catch(error){
-        console.log(error)
-        res.json({success: false, message: error.message});
+
+        let cartData = userData.cartData || {};
+
+        const existing = Number(cartData[itemId]) || 0;
+        cartData[itemId] = existing + Number(quantity);
+
+        await userModel.findByIdAndUpdate(userId, { cartData });
+        res.json({ success: true, message: "Added To Cart" });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
     }
 }
 
-
-// update user cart
 const updateCart = async (req, res) => {
-    try{
-        const { userId, itemId, size, quantity } = req.body
-        const userData = await userModel.findById(userId);
-        let cartData = await userData.cartData;
+    try {
+        const { userId, userEmail, itemId, quantity } = req.body;
 
-        cartData[itemId][size] = quantity
-        await userModel.findByIdAndUpdate(userId, {cartData})
-        res.json({success: true, message: "Cart updated successfully"});
-    }
-    catch(error){
-        console.log(error)
-        res.json({success: false, message: error.message});
+        await getOrCreateUser(userId, userEmail); // Ensure user exists
+        const userData = await userModel.findById(userId);
+
+        let cartData = userData.cartData || {};
+        cartData[itemId] = Number(quantity) || 0;
+
+        await userModel.findByIdAndUpdate(userId, { cartData });
+        res.json({ success: true, message: "Cart Updated" });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
     }
 }
 
-// get user cart
 const getUserCart = async (req, res) => {
-    try{
-        const { userId } = req.body;
-        const userData = await userModel.findById(userId);
-        let cartData = await userData.cartData;
-        res.json({success: true, message: cartData});
-    }
-    catch(error){
-        console.log(error)
-        res.json({success: false, message: error.message})
+    try {
+        const { userId, userEmail } = req.body;
+
+        const userData = await getOrCreateUser(userId, userEmail); // Ensure user exists
+        let cartData = userData.cartData || {};
+
+        // Ensure values are numbers (flatten any legacy nested shapes)
+        const normalized = {};
+        Object.entries(cartData).forEach(([itemId, value]) => {
+            if (value == null) return;
+            if (typeof value === 'object') {
+                const sum = Object.values(value).reduce((s, v) => s + (Number(v) || 0), 0);
+                normalized[itemId] = sum;
+            } else {
+                normalized[itemId] = Number(value) || 0;
+            }
+        });
+
+        res.json({ success: true, cartData: normalized });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
     }
 }
 
-export { addToCart, updateCart, getUserCart }
+export { addToCart, updateCart, getUserCart };

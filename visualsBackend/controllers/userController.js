@@ -81,4 +81,70 @@ const adminLogin=async (req,res)=>{
 
 }
 
-export {loginUser,registerUser,adminLogin}
+//route for getting user profile
+const getUserProfile = async (req, res) => {
+    try {
+        // Get from either req object or req.body (for compatibility with GET and POST)
+        const userId = req.userId || req.body.userId;
+        const userEmail = req.userEmail || req.body.userEmail;
+        
+        console.log('Profile request - userId:', userId, 'userEmail:', userEmail);
+        
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "User ID not found" });
+        }
+
+        // Extract name from email if not available
+        const nameFromEmail = userEmail ? userEmail.split('@')[0] : 'User';
+
+        // First, try to find by userId
+        let user = await userModel.findById(userId);
+        
+        if (user) {
+            // User exists with this ID, update if needed
+            if (user.email !== userEmail) {
+                user = await userModel.findByIdAndUpdate(
+                    userId,
+                    { email: userEmail },
+                    { new: true }
+                );
+            }
+        } else {
+            // User doesn't exist with this ID, check if email exists with different ID
+            const existingUser = await userModel.findOne({ email: userEmail });
+            
+            if (existingUser) {
+                // Email exists with different UID, update it to use new UID
+                // Delete old record and create new one with new UID
+                await userModel.deleteOne({ email: userEmail });
+                console.log('Deleted old user record with same email');
+            }
+            
+            // Create new user with this UID
+            user = await userModel.create({
+                _id: userId,
+                email: userEmail || 'no-email@example.com',
+                name: nameFromEmail,
+                cartData: {}
+            });
+            console.log('User created:', user);
+        }
+
+        console.log('Returning user data:', user);
+        res.json({
+            success: true,
+            user: {
+                _id: user._id,
+                name: user.name || 'User',
+                email: user.email,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
+            }
+        });
+    } catch (error) {
+        console.error('Error in getUserProfile:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+
+export {loginUser,registerUser,adminLogin,getUserProfile}

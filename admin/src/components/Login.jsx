@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios'
 import { useState, useEffect, useContext } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { NotificationContext } from '../context/NotificationContext';
 
 import { backendUrl } from '../App';
 
@@ -9,6 +9,8 @@ import { backendUrl } from '../App';
 const Login = ({setToken}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const { error: showError } = useContext(NotificationContext);
+    
     const onSubmitHandler = async (e) =>{
         try{
             e.preventDefault();
@@ -17,13 +19,13 @@ const Login = ({setToken}) => {
               setToken(response.data.token)
 
             }else{
-              toast.error(response.data.message)
+              showError(response.data.message || 'Login failed')
 
             }
         }
         catch (error){
             console.log(error);
-            toast.error(error.message)
+            showError('Unable to login. Please try again')
         }
     }
   return (

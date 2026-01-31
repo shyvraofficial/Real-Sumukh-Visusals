@@ -1,11 +1,13 @@
 import React from 'react'
 import axios from 'axios'
 import { backendUrl, currency } from '../App'
-import { toast } from 'react-toastify'
-import { useState, useEffect } from 'react'
+import { NotificationContext } from '../context/NotificationContext'
+import { useState, useEffect, useContext } from 'react'
 
 const List = () => {
   const [list, setList] = useState([])
+  const { error: showError, success } = useContext(NotificationContext);
+  
   const fetchList = async()=>{
     try{
       const response = await axios.get(`${backendUrl}/api/product/list`)
@@ -13,12 +15,12 @@ const List = () => {
         setList(response.data.products)
       }
       else{
-        toast.error(response.data.message)
+        showError(response.data.message || 'Unable to load products')
       }
     }
     catch (error){
       console.error(error)
-      toast.error(error.message)
+      showError('Unable to load products')
     }
   }
 
@@ -30,26 +32,26 @@ const List = () => {
 
   const removeProduct = async (id) => {
     try {
-      const token = localStorage.getItem('token');  // ✅ Fetch token
+      const token = localStorage.getItem('token');
       if (!token) {
-        toast.error('Authentication token not found');
+        showError('Authentication token not found');
         return;
       }
   
       const response = await axios.post(
         `${backendUrl}/api/product/remove`,
         { id },
-        { headers: { token } }  // ✅ Pass token properly
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.data.success) {
-        toast.success(response.data.message);
+        success(response.data.message || 'Product removed successfully');
         await fetchList();
       } else {
-        toast.error(response.data.message);
+        showError(response.data.message || 'Unable to remove product');
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || error.message);
+      showError(error.response?.data?.message || 'Unable to remove product');
     }
   };
 

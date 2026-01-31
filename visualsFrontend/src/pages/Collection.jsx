@@ -1,135 +1,312 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 import { ShopContext } from '../context/ShopContext'
-import { assets } from '../assets/assets';
-import Title from '../components/title';
-import ProductItems from '../components/ProductItems';
+import ProductItems from '../components/ProductItems'
+import { assets } from '../assets/assets'
+import './Collection.css'
 
 
 const Collection = () => {
-  const {products, search, showSearch}=useContext(ShopContext);
-  const [showFilter,setShowFilter]=useState(false);
-  const [filterProducts,setFilterProducts]=useState([]);
-  const [category, setCategory] = useState([]);
-  const [subCategory, setSubCategory] = useState([]);
-  const [sortType, setSortType] = useState('relevant');
+  const { products, search, setSearch, showSearch, setShowSearch } = useContext(ShopContext)
+  const [showFilter, setShowFilter] = useState(false)
+  const [filterProducts, setFilterProducts] = useState([])
+  const [category, setCategory] = useState([])
+  const [subCategory, setSubCategory] = useState([])
+  const [sortType, setSortType] = useState('relevant')
+  const [expandedFilters, setExpandedFilters] = useState({ category: true, type: true })
 
-  useEffect(()=>{
-    setFilterProducts(products);
-  },[products])
+  console.log('Products from context:', products)
+  console.log('FilterProducts state:', filterProducts)
 
-  useEffect(()=>{
-    applyFilter();
-  },[category,subCategory,search,showSearch] )
+  useEffect(() => {
+    if (products && products.length > 0) {
+      setFilterProducts(products)
+    }
+  }, [products])
 
-  useEffect(()=>{
-    sortProduct();
-  },[sortType] )
+  useEffect(() => {
+    applyFilter()
+  }, [category, subCategory, search, showSearch])
+
+  useEffect(() => {
+    sortProduct()
+  }, [sortType])
 
   const toggleCategory = (e) => {
-    if(category.includes(e.target.value)){
-      setCategory(prev => prev.filter(item => item !== e.target.value));
-    }
-    else{
+    if (category.includes(e.target.value)) {
+      setCategory(prev => prev.filter(item => item !== e.target.value))
+    } else {
       setCategory(prev => [...prev, e.target.value])
     }
   }
-  const toggleSubCategory=(e) =>{
-    if(subCategory.includes(e.target.value)){
-      setSubCategory(prev=> prev.filter(item =>item !== e.target.value));
-    }
-    else{
-      setSubCategory(prev=> [...prev,e.target.value])
+
+  const toggleSubCategory = (e) => {
+    if (subCategory.includes(e.target.value)) {
+      setSubCategory(prev => prev.filter(item => item !== e.target.value))
+    } else {
+      setSubCategory(prev => [...prev, e.target.value])
     }
   }
+
   const applyFilter = () => {
-    let productsCopy = products.slice();
-    
-    if(showSearch && search){
-      productsCopy = productsCopy.filter(item => item.name.toLowerCase().includes(search.toLowerCase()));
+    let productsCopy = products && products.length > 0 ? products.slice() : []
+
+    if (showSearch && search) {
+      productsCopy = productsCopy.filter(item =>
+        item.name.toLowerCase().includes(search.toLowerCase())
+      )
     }
 
-    if(category.length > 0){
-      productsCopy = productsCopy.filter(item => category.includes(item.category))
+    if (category.length > 0) {
+      productsCopy = productsCopy.filter(item => {
+        const itemCategories = Array.isArray(item.categories) ? item.categories : [item.category]
+        return category.some(cat => itemCategories.includes(cat))
+      })
     }
-    if(subCategory.length > 0){
-      productsCopy = productsCopy.filter(item => subCategory.includes(item.subCategory))
+    if (subCategory.length > 0) {
+      productsCopy = productsCopy.filter(item => {
+        const itemSubCategories = Array.isArray(item.subCategories) ? item.subCategories : [item.subCategory]
+        return subCategory.some(subCat => itemSubCategories.includes(subCat))
+      })
     }
     setFilterProducts(productsCopy)
   }
 
   const sortProduct = () => {
-    let fpCopy = filterProducts.slice();
-    switch (sortType){
+    let fpCopy = filterProducts.slice()
+    switch (sortType) {
       case 'low-high':
-        setFilterProducts(fpCopy.sort((a,b)=>(a.price-b.price)));
-        break;
+        setFilterProducts(fpCopy.sort((a, b) => a.price - b.price))
+        break
       case 'high-low':
-        setFilterProducts(fpCopy.sort((a,b)=>(b.price-a.price)));
-        break;
+        setFilterProducts(fpCopy.sort((a, b) => b.price - a.price))
+        break
       default:
-        applyFilter();
-        break;
+        applyFilter()
+        break
     }
   }
 
-  
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3 }
+    }
+  }
+
   return (
-    <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t'>
-      {/*Filter options */}
-      <div className='min-w-60'>
-        <p onClick={()=>setShowFilter(!showFilter)} className='mt-2 text-xl flex items-center cursor-pointer gap-2'>FILTERS <img className={`h-3 sm:hidden filter invert z-10 ${showFilter ? 'rotate-90' : ''}`} src={assets.dropdown_icon} alt="" /></p> 
-        {/* Category Filter */} 
-        <div className={`border border-gray-300 pl-2 py-3 mt-4 ${showFilter ? '' : 'hidden'} sm:block`}>
-          <p className='mb-3 text-sm font-medium'>CATEGORIES</p>
-          <div className='flex flex-col gap-2 text-base font-light text-gray-700'>
-            
-            <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Men'} onChange={toggleCategory} />Men
-            </p>
-            <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Women'} onChange={toggleCategory} />Women
-            </p>
-            <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Kids'} onChange={toggleCategory} />Kids
-            </p>
+    <div className="collection-page">
+      {/* Hero Section */}
+      <motion.div
+        className="collection-hero"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
+        <div className="hero-content">
+          <h1>Explore Now</h1>
+          <p>Discover our curated selection of premium products</p>
+        </div>
+      </motion.div>
+
+      {/* Search Bar */}
+      {showSearch && (
+        <div className="collection-search">
+          <div className="search-container">
+            <div className="search-input-wrapper">
+              <input
+                value={search} 
+                name="search"
+                onChange={(e) => setSearch(e.target.value)}
+                className="search-input"
+                type="text"
+                placeholder="Search"
+              />
+              <img className="search-icon !h-[1rem] !w-[rem]" src={assets.search_icon} alt="search" />
+            </div>
+            <img
+              onClick={() => setShowSearch(false)}
+              className="search-close"
+              src={assets.cross_icon}
+              alt="close"
+            />
           </div>
         </div>
-        {/* subcategory */}
-        <div className={`border border-gray-300 pl-5 py-3 mt-4 ${showFilter ? '' : 'hidden'} sm:block`}>
-          <p className='mb-3 text-sm font-medium'>TYPES</p>
-          <div className='flex flex-col gap-2 text-base font-light text-gray-700'>
-            
-            <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Topwear'} onChange={toggleSubCategory}/>Topwear
-            </p>
-            <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Bottomwear'} onChange={toggleSubCategory}/>Bottomwear
-            </p>
-            <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Winterwear'} onChange={toggleSubCategory}/>Winterwear
-            </p>
+      )}
+
+      <div className="collection-main">
+        {/* Sidebar */}
+        <motion.aside
+          className="collection-sidebar"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="sidebar-header">
+            <h3>Filters</h3>
+            <button
+              className="close-filters"
+              onClick={() => setShowFilter(!showFilter)}
+            >
+              <img 
+                src={showFilter ? assets.cross_icon : assets.dropdown_icon} 
+                alt="toggle filters"
+                className="filter-toggle-icon"
+              />
+            </button>
           </div>
-        </div>
-      </div>
-      {/* right side */}
-      <div className='flex-1'>
-        <div className='flex justify-between text-xl sm:text-2xl mb-4 sm:grid md:flex lg:text-3xl'>
-          {/* All collection para */}
-          <Title text1={'ALL'} text2={'COLLECTIONS'}></Title>
-          {/* sort by */}
-          <select onChange={(e)=>setSortType(e.target.value)} className="border-2 border-gray-300 text-sm px-2 ml-5" >
-            <option value='relevant'>Sort by: Relevance</option>
-            <option value='low-high'>Sort by: Low to High</option>
-            <option value='high-low'>Sort by: High to Low</option>
-          </select>
-        </div>
-        {/* Map Products */}
-        <div className='grid grid-cols-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4  gap-y-6'>
-          {
-            filterProducts.map((item,index)=>(
-              <ProductItems key={index} name={item.name} id={item._id} price={item.price} image={item.images} />   
-            ))
-          }
+
+          <div className={`filter-section ${showFilter ? 'active' : ''}`}>
+            <div className="filter-group">
+              <div className="filter-header" onClick={() => setExpandedFilters({...expandedFilters, category: !expandedFilters.category})}>
+                <h4>Category</h4>
+                <img 
+                  src={assets.dropdown_icon} 
+                  alt="expand" 
+                  className={`dropdown-icon ${expandedFilters.category ? 'expanded' : ''}`}
+                />
+              </div>
+              {expandedFilters.category && (
+                <div className="checkbox-group">
+                  {['Assets', 'Packs', 'Free', 'Support'].map(cat => (
+                    <label key={cat} className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        value={cat}
+                        onChange={toggleCategory}
+                        checked={category.includes(cat)}
+                      />
+                      <span>{cat}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="filter-group">
+              <div className="filter-header" onClick={() => setExpandedFilters({...expandedFilters, type: !expandedFilters.type})}>
+                <h4>Type</h4>
+                <img 
+                  src={assets.dropdown_icon} 
+                  alt="expand" 
+                  className={`dropdown-icon ${expandedFilters.type ? 'expanded' : ''}`}
+                />
+              </div>
+              {expandedFilters.type && (
+                <div className="checkbox-group">
+                  {['Sound Effects', 'Overlays and Transitions', 'Text Animation and MOGRTs'].map(type => (
+                    <label key={type} className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        value={type}
+                        onChange={toggleSubCategory}
+                        checked={subCategory.includes(type)}
+                      />
+                      <span>{type}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {(category.length > 0 || subCategory.length > 0) && (
+              <button
+                className="btn-clear-filters"
+                onClick={() => {
+                  setCategory([])
+                  setSubCategory([])
+                }}
+              >
+                Clear Filters
+              </button>
+            )}
+          </div>
+        </motion.aside>
+
+        {/* Products Section */}
+        <div className="collection-content">
+          {/* Controls */}
+          <div className="content-header">
+            <h3 className="collection-subheading">Curated Catalog</h3>
+            <div className="sort-wrapper">
+              <label htmlFor="sort-select">Sort:</label>
+              <select
+                id="sort-select"
+                value={sortType}
+                onChange={(e) => setSortType(e.target.value)}
+                className="sort-select"
+              >
+                <option value="relevant">Relevant</option>
+                <option value="low-high">Price: Low to High</option>
+                <option value="high-low">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Grid */}
+          {filterProducts && filterProducts.length > 0 ? (
+            <div className="products-grid">
+              {filterProducts.map((item) => (
+                <div
+                  key={item._id}
+                  className="product-card"
+                >
+                  <ProductItems
+                    name={item.name}
+                    id={item._id}
+                    price={item.price}
+                    image={item.images}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : products && products.length > 0 ? (
+            <div className="products-grid">
+              {products.map((item) => (
+                <div
+                  key={item._id}
+                  className="product-card"
+                >
+                  <ProductItems
+                    name={item.name}
+                    id={item._id}
+                    price={item.price}
+                    image={item.images}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              className="empty-state"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <p>No products found - Loading from server...</p>
+              <button
+                className="btn-reset"
+                onClick={() => {
+                  setCategory([])
+                  setSubCategory([])
+                }}
+              >
+                Reset Filters
+              </button>
+            </motion.div>
+          )}
         </div>
       </div>
     </div>

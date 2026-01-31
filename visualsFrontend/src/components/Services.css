@@ -1,0 +1,163 @@
+/* --- 1. Base Styles (Unchanged) --- */
+.services {
+  background: #ffffff;
+  padding: 80px 20px;
+  width: 100%;
+}
+
+.services-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.services-title {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 700;
+  text-align: center;
+  color: #1a1a1a;
+  margin-bottom: 60px;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+.services-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* --- Desktop Tabs (Unchanged) --- */
+.services-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeInLeft 0.8s ease-out 0.2s both;
+}
+
+.service-tab {
+  background: transparent;
+  border: none;
+  border-left: 3px solid #e0e0e0;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666666;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.service-tab.active {
+  border-left-color: #000000;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+/* --- Display (Desktop Unchanged) --- */
+.services-display {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  animation: fadeInRight 0.8s ease-out 0.2s both;
+}
+
+.service-image-wrapper {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 400px;
+}
+
+.service-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.service-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+}
+
+.service-desc {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #666666;
+  max-width: 500px;
+}
+
+/* --- 2. CLEANER RESPONSIVE REMAKE --- */
+
+@media (max-width: 968px) {
+  .services-content {
+    grid-template-columns: 1fr; /* Stack columns */
+    gap: 32px;
+  }
+
+  .services-tabs {
+    flex-direction: row;
+    flex-wrap: nowrap; /* Prevent "weird" wrapping */
+    overflow-x: auto; /* Horizontal scroll */
+    padding-bottom: 10px;
+    margin: 0 -20px; /* Bleed to screen edges */
+    padding-left: 20px;
+    padding-right: 20px;
+    scrollbar-width: none; /* Hide scrollbar Firefox */
+  }
+
+  .services-tabs::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
+  }
+
+  .service-tab {
+    flex: 0 0 auto; /* Keep button size based on text */
+    border: 1px solid #e0e0e0;
+    border-left: 1px solid #e0e0e0; /* Reset desktop left-border */
+    border-radius: 8px;
+    padding: 12px 20px;
+    white-space: nowrap; /* Keep text on one line */
+    text-align: center;
+  }
+
+  .service-tab.active {
+    background: #1a1a1a;
+    color: #ffffff;
+    border-color: #1a1a1a;
+  }
+
+  .services-display {
+    text-align: center; /* Better look for mobile info */
+    align-items: center;
+  }
+
+  .service-image-wrapper {
+    height: 300px;
+  }
+
+  .service-desc {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .services {
+    padding: 40px 16px;
+  }
+
+  .service-image-wrapper {
+    height: 220px;
+  }
+
+  .service-name {
+    font-size: 22px;
+  }
+
+  .service-tab {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}
+
+/* Keep your existing @keyframes animations below */

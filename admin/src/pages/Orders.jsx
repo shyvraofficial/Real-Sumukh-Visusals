@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { backendUrl, currency } from '../App';
-import { toast } from 'react-toastify';
+import { NotificationContext } from '../context/NotificationContext';
 import { assets } from '../assets/assets';
 
 const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
+  const { error: showError } = useContext(NotificationContext);
 
   const fetchAllOrders = async () => {
     if (!token) return null;
@@ -14,36 +15,20 @@ const Orders = ({ token }) => {
       const response = await axios.post(
         `${backendUrl}/api/order/list`,
         {},
-        { headers: { token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       console.log(response.data);
       if (response.data.success) {
         setOrders(response.data.orders);
       } else {
-        toast.error(response.data.message);
+        showError(response.data.message || 'Unable to fetch orders');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Something went wrong');
+      showError(error.response?.data?.message || 'Unable to load orders');
     }
   };
 
-  const statusHandler = async (event, orderId) => {
-    try {
-      const response = await axios.post(
-        `${backendUrl}/api/order/status`,
-        { orderId, status: event.target.value },
-        { headers: { token } }
-      );
-      if (response.data.success) {
-        toast.success('Order status updated');
-        await fetchAllOrders();
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to update status');
-    }
-  };
+
 
   useEffect(() => {
     fetchAllOrders();
@@ -99,17 +84,7 @@ const Orders = ({ token }) => {
               {order.amount}
             </p>
 
-            <select
-              onChange={(event) => statusHandler(event, order._id)}
-              value={order.status}
-              className="p-2 font-semibold"
-            >
-              <option value="Order Placed">Order Placed</option>
-              <option value="Packing">Packing</option>
-              <option value="Shipped">Ready to Ship</option>
-              <option value="Out for delivery">Out for delivery</option>
-              <option value="Delivered">Delivered</option>
-            </select>
+            <p className="p-2 font-semibold text-green-600">Sent</p>
           </div>
         ))}
       </div>
