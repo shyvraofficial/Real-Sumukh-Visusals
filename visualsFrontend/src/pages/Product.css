@@ -122,8 +122,8 @@
 .rating-price-row {
   display: flex;
   align-items: center;
-  gap: 30px;
-  padding: 12px 0;
+  gap: 14px;
+  padding: 10px 0;
   border-bottom: 1px solid #efefef;
 }
 
@@ -158,9 +158,11 @@
 }
 
 .price-value {
-  font-size: clamp(20px, 2vw, 28px);
-  font-weight: 700;
+  font-size: clamp(26px, 2.6vw, 40px);
+  font-weight: 800;
   color: #131313;
+  letter-spacing: -0.6px;
+  line-height: 1;
 }
 
 /* Description */
