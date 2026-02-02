@@ -273,6 +273,12 @@ app.get('/', (req, res) => {
   res.send('API working');
 });
 
-app.listen(port, () => {
-  console.log(`🚀 Server running on port ${port}`);
-});
+// In serverless environments like Vercel, we export the app
+// instead of starting a dedicated HTTP listener.
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`🚀 Server running on port ${port}`);
+  });
+}
+
+export default app;
