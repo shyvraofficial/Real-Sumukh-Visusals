@@ -242,9 +242,9 @@
 }
 
 /* --- RESPONSIVE UPDATES --- */
-@media (min-width: 941px) {
+@media (max-width: 940px) {
   .contact-container {
-    padding-left: 0;
+    padding-left: 0 !important;
   }
 }
 

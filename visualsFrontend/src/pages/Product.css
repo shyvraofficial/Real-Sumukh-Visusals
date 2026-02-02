@@ -21,7 +21,7 @@
   padding: 60px 20px;
   display: grid;
   grid-template-columns: 0.75fr 1fr;
-  gap: 50px;
+  gap: 40px;
   align-items: start;
 }
 
@@ -106,7 +106,7 @@
 .product-info-section {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
 }
 
 /* Product Title */
@@ -123,7 +123,7 @@
   display: flex;
   align-items: center;
   gap: 30px;
-  padding: 16px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #efefef;
 }
 
@@ -176,7 +176,7 @@
 .quantity-selection {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .selection-label {
@@ -273,7 +273,7 @@
 .action-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
   margin-top: 8px;
 }
 
@@ -321,9 +321,27 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 24px 0;
+  padding: 18px 0;
   border-top: 1px solid #efefef;
   border-bottom: 1px solid #efefef;
+}
+
+/* =====================
+   DESKTOP (≥ 901px)
+   Keep media smaller + centered
+   ===================== */
+@media (min-width: 901px) {
+  .main-image-container {
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .thumbnail-container {
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 .benefit {
@@ -393,7 +411,7 @@
 
   .main-image-container {
     aspect-ratio: auto;
-    height: 520px;
+    height: 460px;
   }
 
   .rating-price-row {
@@ -436,6 +454,24 @@
   .tab {
     font-size: 11px;
     padding: 12px 16px;
+  }
+}
+
+@media (max-width: 900px) {
+  .main-image-container {
+    height: 400px;
+  }
+
+  .product-wrapper {
+    gap: 28px;
+  }
+
+  .product-info-section {
+    gap: 14px;
+  }
+
+  .rating-price-row {
+    padding: 10px 0;
   }
 }
 
