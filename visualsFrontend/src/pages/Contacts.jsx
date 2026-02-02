@@ -58,7 +58,7 @@ const Contacts = () => {
 
       await emailjs.send(serviceId, templateId, templateParams, userId)
       // Optionally keep logging to backend for records
-      fetch('http://localhost:4000/api/contact', {
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
