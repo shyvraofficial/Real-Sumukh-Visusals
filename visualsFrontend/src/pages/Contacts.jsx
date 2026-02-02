@@ -1,6 +1,7 @@
 import React, { useState, useContext, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { NotificationContext } from '../context/NotificationContext'
+import { API_BASE_URL } from '../context/ShopContext'
 import './Contacts.css'
 import emailjs from '@emailjs/browser'
 
@@ -58,7 +59,7 @@ const Contacts = () => {
 
       await emailjs.send(serviceId, templateId, templateParams, userId)
       // Optionally keep logging to backend for records
-      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/contact`, {
+      fetch(`${API_BASE_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

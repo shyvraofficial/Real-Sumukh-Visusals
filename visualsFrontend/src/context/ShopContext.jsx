@@ -5,11 +5,12 @@ import { onAuthStateChanged, signOut } from 'firebase/auth'; // Import signOut
 import { auth } from '../Config';
 
 export const ShopContext = createContext();
+export const API_BASE_URL = 'https://api.sumukhvisuals.com';
 
 const ShopContextProvider = (props) => {
     const currency = '₹';
     const delivery_fee = 10;
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const backendUrl = API_BASE_URL;
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
     const [cartItems, setCartItems] = useState(() => {
