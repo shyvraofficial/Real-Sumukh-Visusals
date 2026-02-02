@@ -23,6 +23,12 @@
   }
 }
 
+@media (max-width: 800px) {
+  .orders-container {
+    padding-top: 50px;
+  }
+}
+
 .orders-header {
   margin-bottom: 40px;
 }

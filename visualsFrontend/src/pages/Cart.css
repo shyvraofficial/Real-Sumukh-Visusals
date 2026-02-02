@@ -684,3 +684,10 @@
     height: 10px;
   }
 }
+
+/* Padding for screens below 900px */
+@media (max-width: 900px) {
+  .cart-header {
+    padding-top: 30px;
+  }
+}

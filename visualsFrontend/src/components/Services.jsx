@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import './Services.css'
+import gymEditImg from './assets2.o/gynedit.jpg'
+import cinematicImg from './assets2.o/cinematography.jpg'
+import talkHeadImg from './assets2.o/talkhead.jpg'
 
 const Services = () => {
   const [activeTab, setActiveTab] = useState(0)
@@ -10,19 +13,19 @@ const Services = () => {
       id: 0,
       title: 'Gym & Fitness Editing',
       description: 'Professional video editing for fitness content including workout compilations, transformation montages, and motivational fitness videos. I create dynamic edits with music synchronization, transitions, and text overlays to enhance your fitness brand and engage your audience.',
-      image: 'https://static.vecteezy.com/system/resources/thumbnails/037/228/850/small/ai-generated-exercise-machines-in-a-gym-free-photo.jpg'
+      image: gymEditImg
     },
     {
       id: 1,
       title: 'Cinematic Video Editing',
       description: 'Cinematic-quality video production with color grading, advanced transitions, and emotional storytelling. Perfect for travel vlogs, documentaries, and brand videos that demand premium visual aesthetics and professional post-production excellence.',
-      image: 'https://miro.medium.com/0*qKaI6a9c0mZi5P1P.jpeg'
+      image: cinematicImg
     },
     {
       id: 2,
       title: 'Talking Head Videos',
       description: 'Professional editing for talking head content, podcasts, and testimonial videos. Includes background removal, lower thirds, B-roll integration, and smooth transitions to create polished, engaging educational and promotional content.',
-      image: 'https://plus.unsplash.com/premium_photo-1661665015293-f08f7cc938b4?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aG9tZSUyMHZpZGVvfGVufDB8fDB8fHww'
+      image: talkHeadImg
     },
     {
       id: 3,
@@ -34,7 +37,7 @@ const Services = () => {
       id: 4,
       title: 'Clothing Brand Mockups',
       description: 'Professional product visualization and mockup design for clothing brands. Create stunning product demonstrations, fashion show edits, and lifestyle integration videos that showcase your apparel in the best possible light.',
-      image: 'https://pixelbuddha.net/storage/articles/fHLxGK1vEJtCrZ8XZCFHt57dMWxdd1XihE1GoUGK.jpg'
+      image: 'https://images.unsplash.com/photo-1696086152513-c74dc1d4b135?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNsb3RoaW5nJTIwbW9ja3VwfGVufDB8fDB8fHww'
     }
   ]
 

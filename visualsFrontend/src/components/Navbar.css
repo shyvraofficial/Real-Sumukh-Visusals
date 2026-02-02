@@ -280,6 +280,23 @@
   }
 }
 
+@media screen and (max-width: 700px) {
+  .navbar-container {
+    padding-left: 0;
+  }
+
+  .navbar-container > a {
+    order: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .logo {
+    margin-left: 0;
+    padding-left: 0;
+  }
+}
+
 @media screen and (max-width: 640px) {
   .navbar-container {
     padding: 1rem 1.2rem;
@@ -290,6 +307,7 @@
     width: 12rem;
     font-size: 12px;
     margin-right: 1rem;
+    margin-left: 0;
   }
 
   .nav-right {

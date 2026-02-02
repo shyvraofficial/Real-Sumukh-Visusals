@@ -95,7 +95,7 @@ const Orders = () => {
     return (
       <div className='orders-container'>
         <div className='orders-header'>
-          <h1 className='orders-title'>MY ORDERS</h1>
+          <h1 className='orders-title'>MY PURCHASES</h1>
         </div>
         <div className='empty-orders'>
           <div className='empty-orders-icon'>📦</div>

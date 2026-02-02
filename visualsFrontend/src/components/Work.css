@@ -249,7 +249,24 @@
   }
 }
 
-@media (max-width: 640px) {
+/* Tablet Screen (641px - 968px) - Increased iframe height */
+@media (min-width: 500px) and (max-width: 968px) {
+  .work {
+    padding: 40px 16px;
+  }
+  .insta-iframe {
+    height: 780px !important;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    max-width: 550px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 500px) {
   .work {
     padding: 40px 16px;
   }
@@ -272,7 +289,7 @@
   }
 
   .projects-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 
@@ -301,101 +318,8 @@
   .project-card:hover {
     transform: translateY(-4px);
   }
-}
-/* --- UPDATED RESPONSIVE SECTION --- */
-
-@media (max-width: 968px) {
-  .work {
-    padding: 60px 20px;
-  }
-
-  .projects-grid {
-    /* Force 1 column for Tablet & Mobile */
-    grid-template-columns: 1fr; 
-    gap: 40px;
-    /* Keeps the reel from becoming too wide on tablets */
-    max-width: 550px; 
-    margin: 0 auto;
-  }
-
-  .insta-embed-wrap {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-
-  .project-info {
-    text-align: center; /* Center text to match the single column look */
-    padding: 16px 0;
-  }
-
-  .project-name {
-    font-size: 20px;
-  }
-}
-
-@media (max-width: 640px) {
-  .work {
-    padding: 40px 16px;
-  }
-
-  .work-title {
-    font-size: clamp(28px, 8vw, 42px);
-  }
-
-  .projects-grid {
-    grid-template-columns: 1fr; /* Stay 1 column */
-    gap: 32px;
-    max-width: 100%; /* Use full width on small phones */
-  }
 
   .insta-embed-wrap iframe {
-    /* Ensure the Instagram height is sufficient for the reel */
-    min-height: 580px !important; 
-  }
-
-  .project-name {
-    font-size: 18px;
-  }
-}
-
-@media (max-width: 968px) {
-  .work {
-    padding: 60px 20px;
-  }
-
-  .projects-grid {
-    grid-template-columns: 1fr;
-    gap: 48px; /* Increased gap for better separation */
-    max-width: 550px;
-    margin: 0 auto;
-  }
-
-  .project-card {
-    /* Adding padding to the left and right of each reel */
-    padding: 0 15px; 
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .project-info {
-    text-align: center;
-    padding: 20px 0;
-  }
-}
-
-@media (max-width: 640px) {
-  .work {
-    padding: 40px 10px; /* Reduced outer padding slightly */
-  }
-
-  .project-card {
-    /* More generous padding for small phones */
-    padding: 0 20px; 
-  }
-
-  .insta-embed-wrap iframe {
-    /* Ensure height stays consistent */
-    min-height: 560px !important;
+    height: 580px !important;
   }
 }

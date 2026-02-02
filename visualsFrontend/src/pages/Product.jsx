@@ -119,19 +119,19 @@ const Product = () => {
           <div className="benefits-section">
             <div className="benefit">
               <span className="benefit-icon">✓</span>
-              <span className="benefit-text">Free Shipping on orders above $50</span>
+              <span className="benefit-text">⚡ Instant access after purchase (digital download)</span>
             </div>
             <div className="benefit">
               <span className="benefit-icon">✓</span>
-              <span className="benefit-text">Easy exchanges & returns</span>
+              <span className="benefit-text">🎬 Built for creators (VFX, SFX, fonts & editing assets)</span>
             </div>
             <div className="benefit">
               <span className="benefit-icon">✓</span>
-              <span className="benefit-text">Cash On Delivery Available</span>
+              <span className="benefit-text">🔒 Secure checkout + receipt by email</span>
             </div>
             <div className="benefit">
               <span className="benefit-icon">✓</span>
-              <span className="benefit-text">Order Dispatches Under 24hrs</span>
+              <span className="benefit-text">💬 Support available if you need help</span>
             </div>
           </div>
         </div>

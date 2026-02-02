@@ -92,6 +92,7 @@ const Work = () => {
                   frameBorder="0"
                   scrolling="no"
                   title={project.title}
+                  className="insta-iframe"
                   style={{ borderRadius: '12px', background: '#000' }}
                 ></iframe>
               </div>
