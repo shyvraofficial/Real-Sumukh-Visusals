@@ -39,7 +39,7 @@ export default function Navbar() {
 
   const navItems = [
     { label: 'Portfolio', to: '/' },
-    { label: 'Collection', to: '/collection' },
+    { label: 'Shop', to: '/collection' },
     { label: 'About', to: '/about' },
     { label: 'Contact', to: '/contact' },
   ];

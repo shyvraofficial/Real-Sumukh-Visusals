@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { NotificationContext } from '../context/NotificationContext';
 import { assets } from '../assets/assets';
-import RelatedProducts from '../components/RelatedProducts';
 import './Product.css';
 
 const Product = () => {
@@ -135,14 +134,6 @@ const Product = () => {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Related Products */}
-      <div className="related-section">
-        <RelatedProducts
-          category={productData.category}
-          subCategory={productData.subCategory}
-        />
       </div>
     </div>
   ) : (

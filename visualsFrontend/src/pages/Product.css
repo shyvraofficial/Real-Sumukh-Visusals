@@ -476,6 +476,48 @@
 }
 
 /* =====================
+   SMALL SCREENS (≤ 800px)
+   Smaller main image + cleaner spacing
+   ===================== */
+@media (max-width: 800px) {
+  .product-wrapper {
+    padding-top: 30px;
+    gap: 26px;
+  }
+
+  .main-image-container {
+    height: 320px;
+  }
+
+  .product-info-section {
+    gap: 16px;
+  }
+
+  .product-title {
+    color: #0f172a;
+    letter-spacing: -0.4px;
+  }
+
+  .rating-price-row {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    padding: 12px 0;
+  }
+
+  .price-value {
+    color: #22c55e;
+  }
+
+  .product-description {
+    color: #475569;
+    line-height: 1.8;
+  }
+
+  .selection-label {
+    color: #334155;
+  }
+}
+
+/* =====================
    MOBILE (≤ 640px)
    ===================== */
 @media (max-width: 640px) {
