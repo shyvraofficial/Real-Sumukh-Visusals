@@ -59,25 +59,29 @@ app.use(helmet({
 }));
 app.use(express.json({ limit: '1mb' }));
 
-const allowedOrigins = [
+const allowedOrigins = new Set([
   'https://www.sumukhvisuals.com',
   'https://sumukhvisuals.com',
-  'https://admin.sumukhvisuals.com', // ONLY if admin is a web app
+  'https://admin.sumukhvisuals.com',
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:3000'
-];
-
+]);
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.has(origin)) {
       return callback(null, true);
     }
+
+    console.error('❌ Blocked by CORS:', origin);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true
 }));
+
 
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
