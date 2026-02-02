@@ -57,7 +57,7 @@ const Work = () => {
   const handleClick = (url) => window.open(url, '_blank')
 
   return (
-    <section className="work">
+    <section className="work" id="work">
       <div className="work-container">
         <motion.h2 
           className="work-title" 

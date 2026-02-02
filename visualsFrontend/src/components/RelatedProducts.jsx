@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import ProductItems from './ProductItems';
-import Title from './title'; // Ensure Title component is imported
+import Subject from './Subject';
 import { NavLink } from 'react-router-dom';
 
 const RelatedProducts = ({ category, subCategory }) => {
@@ -20,7 +20,7 @@ const RelatedProducts = ({ category, subCategory }) => {
   return (
     <div>
       <div className="text-center text-3xl py-2">
-        <Title text1={'RELATED'} text2={'PRODUCTS'} />
+        <Subject text1={'RELATED'} text2={'PRODUCTS'} />
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
         {related.map((item, index) => (

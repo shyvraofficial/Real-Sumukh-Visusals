@@ -191,10 +191,10 @@
 }
 
 .skill-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  transform: none !important;
+  scale: 1 !important;
 }
 
 /* Stats Section */

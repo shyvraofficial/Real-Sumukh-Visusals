@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { motion } from 'framer-motion'
+import emailjs from '@emailjs/browser'
+import { NotificationContext } from '../context/NotificationContext'
 import './Contact.css'
 
 const Contact = () => {
@@ -13,6 +15,14 @@ const Contact = () => {
   })
 
   const [submitted, setSubmitted] = useState(false)
+  const { success, error: showError } = useContext(NotificationContext)
+
+  useEffect(() => {
+    const userId = import.meta.env.VITE_EMAILJS_USER
+    if (userId) {
+      emailjs.init(userId)
+    }
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -22,27 +32,71 @@ const Contact = () => {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Here you would typically send the form data to a backend
-    console.log('Form submitted:', formData)
-    setSubmitted(true)
-    setTimeout(() => {
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        projectType: '',
-        budget: '',
-        message: ''
-      })
-      setSubmitted(false)
-    }, 3000)
+
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE
+    const userId = import.meta.env.VITE_EMAILJS_USER
+    const receiver = import.meta.env.VITE_CONTACT_RECEIVER || 'sumukhvisuals@gmail.com'
+
+    const templateParams = {
+      name: formData.name || 'Not provided',
+      email: formData.email || 'Not provided',
+      phone: formData.phone || 'Not provided',
+      project_type: formData.projectType || 'Not provided',
+      budget: formData.budget || 'Not provided',
+      message: formData.message || 'Not provided',
+      time: new Date().toLocaleString(),
+      to_email: receiver
+    }
+
+    try {
+      if (!serviceId || !templateId || !userId) {
+        throw new Error('EmailJS not configured. Set VITE_EMAILJS_SERVICE, VITE_EMAILJS_TEMPLATE, VITE_EMAILJS_USER in .env')
+      }
+
+      await emailjs.send(serviceId, templateId, templateParams, userId)
+      setSubmitted(true)
+      success('Thank you! Your message has been sent via email')
+      setTimeout(() => {
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          projectType: '',
+          budget: '',
+          message: ''
+        })
+        setSubmitted(false)
+      }, 2000)
+    } catch (err) {
+      console.error('Email send error:', err)
+      showError('Unable to send message. Please try again')
+    }
   }
 
   const handleWhatsApp = () => {
-    const message = `Hi Sumukh, I'd like to discuss a video editing project. Name: ${formData.name || 'Not provided'}, Email: ${formData.email || 'Not provided'}`
-    window.open(`https://wa.me/917xxxx-xxxx?text=${encodeURIComponent(message)}`, '_blank')
+    const { name, email, phone, projectType, budget, message } = formData
+
+    if (!message.trim()) {
+      showError('Please write a message before sending')
+      return
+    }
+
+    const whatsappMessage = `Hi Sumukh!\n\nName: ${name || 'Not provided'}\nEmail: ${email || 'Not provided'}\nPhone: ${phone || 'Not provided'}\nProject Type: ${projectType || 'Not provided'}\nBudget: ${budget || 'Not provided'}\n\nMessage:\n${message}`
+    window.open(`https://wa.me/919084716627?text=${encodeURIComponent(whatsappMessage)}`, '_blank')
+    
+    // Clear form after sending via WhatsApp
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      projectType: '',
+      budget: '',
+      message: ''
+    })
+    success('Message sent via WhatsApp')
   }
 
   const containerVariants = {
@@ -180,10 +234,10 @@ const Contact = () => {
 
             <motion.div className="form-buttons" variants={itemVariants}>
               <button type="submit" className="form-btn primary">
-                {submitted ? 'Message Sent! ✓' : 'Send Message'}
+                {submitted ? 'Message Sent! ✓' : 'Send via Email'}
               </button>
               <button type="button" className="form-btn secondary" onClick={handleWhatsApp}>
-                WhatsApp Message
+                Send via WhatsApp
               </button>
             </motion.div>
           </motion.form>
@@ -203,8 +257,8 @@ const Contact = () => {
                 </svg>
               </div>
               <h3>Email</h3>
-              <p>sumukh@example.com</p>
-              <a href="mailto:sumukh@example.com">Send Email</a>
+              <p>sumukhvisuals@gmail.com</p>
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=sumukhvisuals@gmail.com" target="_blank" rel="noopener noreferrer">Send Email</a>
             </motion.div>
 
             <motion.div className="info-card" variants={itemVariants}>
@@ -215,7 +269,7 @@ const Contact = () => {
               </div>
               <h3>WhatsApp</h3>
               <p>Quick Response</p>
-              <a href="https://wa.me/917xxxx-xxxx" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/919084716627" target="_blank" rel="noopener noreferrer">
                 Message on WhatsApp
               </a>
             </motion.div>

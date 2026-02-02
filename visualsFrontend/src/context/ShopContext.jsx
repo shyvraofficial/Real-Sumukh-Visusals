@@ -308,17 +308,22 @@ const ShopContextProvider = (props) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const freshToken = await user.getIdToken();
-                // Determine if this is a fresh login or a page refresh
                 const prevToken = localStorage.getItem('token');
+                const freshMagicLogin = localStorage.getItem('freshMagicLogin') === '1';
+                const freshToken = await user.getIdToken();
                 setToken(freshToken);
                 localStorage.setItem('token', freshToken);
+                localStorage.setItem('userId', user.uid);
                 // If there was no previous token stored, this is a fresh login — persist merged cart to server
-                const persist = !prevToken;
+                const persist = !prevToken && !freshMagicLogin;
+                if (freshMagicLogin) {
+                    localStorage.removeItem('freshMagicLogin');
+                }
                 await getUserCart(freshToken, persist);
             } else {
                 setToken('');
                 localStorage.removeItem('token');
+                localStorage.removeItem('userId');
                 // Don't clear cart - keep guest cart items
             }
             setLoading(false);

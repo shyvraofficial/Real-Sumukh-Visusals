@@ -164,7 +164,7 @@ const PrivacyPolicy = () => {
         },
         {
           subtitle: "8.5 Contact for Rights",
-          content: "Email sumukh@example.com with 'Privacy Rights Request' to exercise any of these rights. We respond within 30 days."
+          content: "Email sumukhvisuals@gmail.com with 'Privacy Rights Request' to exercise any of these rights. We respond within 30 days."
         }
       ]
     },
@@ -211,11 +211,11 @@ const PrivacyPolicy = () => {
       subsections: [
         {
           subtitle: "For Privacy Inquiries:",
-          content: "Email: sumukh@example.com\nSubject: Privacy Policy Inquiry\nResponse Time: Within 7 business days"
+          content: "Email: sumukhvisuals@gmail.com\nSubject: Privacy Policy Inquiry\nResponse Time: Within 7 business days"
         },
         {
           subtitle: "For Complaints:",
-          content: "Email: sumukh@example.com\nSubject: Privacy Complaint\nWe investigate and respond within 30 days with resolution details."
+          content: "Email: sumukhvisuals@gmail.com\nSubject: Privacy Complaint\nWe investigate and respond within 30 days with resolution details."
         }
       ]
     }
@@ -284,7 +284,7 @@ const PrivacyPolicy = () => {
         {/* Footer */}
         <motion.div className='policy-footer' variants={itemVariants}>
           <p>
-            If you have questions about this Privacy Policy, please contact us at <a href="mailto:sumukh@example.com">sumukh@example.com</a>
+            If you have questions about this Privacy Policy, please contact us at <a href="mailto:sumukhvisuals@gmail.com">sumukhvisuals@gmail.com</a>
           </p>
         </motion.div>
       </div>

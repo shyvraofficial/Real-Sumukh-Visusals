@@ -24,7 +24,6 @@ const addProduct = async (req, res) => {
         const image3 = req.files.image3?.[0];
         const image4 = req.files.image4?.[0];
         const images = [image1, image2, image3, image4].filter((item) => item !== undefined);
-        console.log(images);
 
         // Upload images to Cloudinary
         let imagesUrl = await Promise.all(
@@ -133,8 +132,6 @@ const getDownloadLink = async (req, res) => {
         const { productId } = req.body;
         const userId = req.userId;
 
-        console.log('Download request - ProductID:', productId, 'UserID:', userId);
-
         // Get the product
         const product = await productModel.findById(productId);
         if (!product) {
@@ -154,13 +151,9 @@ const getDownloadLink = async (req, res) => {
             'items._id': productId
         });
 
-        console.log('Order found:', !!order);
-
         if (!order) {
             return res.status(403).json({ success: false, message: "You haven't purchased this product" });
         }
-
-        console.log('Returning download link');
         res.json({ success: true, downloadLink: product.downloadLink });
     }
     catch (error) {

@@ -88,7 +88,6 @@ const getUserProfile = async (req, res) => {
         const userId = req.userId || req.body.userId;
         const userEmail = req.userEmail || req.body.userEmail;
         
-        console.log('Profile request - userId:', userId, 'userEmail:', userEmail);
         
         if (!userId) {
             return res.status(401).json({ success: false, message: "User ID not found" });
@@ -117,7 +116,6 @@ const getUserProfile = async (req, res) => {
                 // Email exists with different UID, update it to use new UID
                 // Delete old record and create new one with new UID
                 await userModel.deleteOne({ email: userEmail });
-                console.log('Deleted old user record with same email');
             }
             
             // Create new user with this UID
@@ -127,10 +125,7 @@ const getUserProfile = async (req, res) => {
                 name: nameFromEmail,
                 cartData: {}
             });
-            console.log('User created:', user);
         }
-
-        console.log('Returning user data:', user);
         res.json({
             success: true,
             user: {

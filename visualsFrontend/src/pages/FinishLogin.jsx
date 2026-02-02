@@ -1,6 +1,7 @@
 
 
 import React, { useEffect, useContext } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { auth, isSignInWithEmailLink, signInWithEmailLink } from '../Config';
 import { ShopContext } from '../context/ShopContext';
@@ -8,12 +9,17 @@ import { NotificationContext } from '../context/NotificationContext';
 
 const FinishLogin = () => {
   const navigate = useNavigate();
-  const { setToken } = useContext(ShopContext);
+  const { setToken, backendUrl, setCartItems } = useContext(ShopContext);
   const { success, error: showError } = useContext(NotificationContext);
 
   useEffect(() => {
     const completeLogin = async () => {
       const url = window.location.href;
+      const params = new URLSearchParams(window.location.search);
+      const redirectParam = params.get('redirect');
+      if (redirectParam) {
+        localStorage.setItem('redirectAfterLogin', redirectParam);
+      }
 
       if (!isSignInWithEmailLink(auth, url)) {
         showError('This login link has expired. Please request a new one.');
@@ -38,11 +44,31 @@ const FinishLogin = () => {
 
         const idToken = await result.user.getIdToken();
 
+        // Mark this as a fresh magic-link login so guest cart merges on first auth sync
+        localStorage.setItem('freshMagicLogin', '1');
         setToken(idToken);
         localStorage.setItem('token', idToken);
 
+        // Merge any pending guest cart (saved during link request) into the user cart
+        try {
+          const mergeRes = await axios.post(
+            `${backendUrl}/api/cart/merge-pending`,
+            { email },
+            { headers: { Authorization: `Bearer ${idToken}` } }
+          );
+          if (mergeRes.data?.success && mergeRes.data?.cartData) {
+            setCartItems(mergeRes.data.cartData);
+          }
+        } catch (mergeErr) {
+          console.log('Merge pending cart failed:', mergeErr?.response?.data || mergeErr.message || mergeErr);
+        }
+
         success('You are now logged in!');
-        navigate('/');
+        
+        // Redirect to stored path or home
+        const redirectPath = localStorage.getItem('redirectAfterLogin') || localStorage.getItem('lastVisitedPath') || '/';
+        localStorage.removeItem('redirectAfterLogin');
+        navigate(redirectPath);
       } catch (error) {
         console.error('FinishLogin error:', error);
         showError('This login link has expired. Please request a new one.');

@@ -1,16 +1,42 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { FaInstagram, FaYoutube, FaLinkedin, FaTwitter, FaArrowRight } from 'react-icons/fa'
+import { useLocation, useNavigate } from 'react-router-dom'
 import './Footer.css'
 
 const Footer = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const navLinks = [
-    { label: 'Home', href: '/' },
-    { label: 'Portfolio', href: '/portfolio' },
-    { label: 'Services', href: '/#services' },
-    { label: 'Shop', href: '/shop' },
+    { label: 'Portfolio', href: '/' },
+    { label: 'Shop', href: '/collection' },
+    { label: 'About', href: '/about' },
+    { label: 'Services', href: null, action: 'services' },
     { label: 'Contact', href: '/contact' }
   ]
+
+  const scrollToServices = () => {
+    const servicesElement = document.getElementById('services')
+    if (servicesElement) {
+      servicesElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  const handleNavigation = (link) => {
+    if (link.action === 'services') {
+      if (location.pathname === '/') {
+        scrollToServices()
+      } else {
+        navigate('/#services')
+      }
+      return
+    }
+
+    if (link.href) {
+      navigate(link.href)
+    }
+  }
 
   const socialLinks = [
     { icon: FaInstagram, href: 'https://instagram.com/sumukhvisuals', label: 'Instagram' },
@@ -65,7 +91,10 @@ const Footer = () => {
             <ul className="footer-links">
               {navLinks.map((link, index) => (
                 <li key={index}>
-                  <a href={link.href}>{link.label}</a>
+                  <a href="#" onClick={(e) => {
+                    e.preventDefault()
+                    handleNavigation(link)
+                  }}>{link.label}</a>
                 </li>
               ))}
             </ul>
@@ -83,11 +112,11 @@ const Footer = () => {
             <div className="footer-contact">
               <p>
                 <span className="label">Email</span>
-                <a href="mailto:sumukh@example.com">sumukh@example.com</a>
+                <a href="mailto:sumukhvisuals@gmail.com">sumukhvisuals@gmail.com</a>
               </p>
               <p>
                 <span className="label">WhatsApp</span>
-                <a href="https://wa.me/917xxxx-xxxx" target="_blank" rel="noopener noreferrer">+91 XXXX XXXX</a>
+                <a href="https://wa.me/919084716627" target="_blank" rel="noopener noreferrer">+91 9084716627</a>
               </p>
               <p>
                 <span className="label">Location</span>
@@ -102,11 +131,11 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="footer-bottom">
-          <p>&copy; 2025 Sumukh Visuals. All rights reserved.</p>
+          <p className="footer-copyright">&copy; 2025 Sumukh Visuals. All rights reserved.</p>
           <div className="footer-links-bottom">
             <a href="/privacy">Privacy Policy</a>
             <span className="divider">•</span>
-            <a href="/terms">Terms of Service</a>
+            <a href="/terms">Terms & Conditions</a>
           </div>
         </div>
       </div>

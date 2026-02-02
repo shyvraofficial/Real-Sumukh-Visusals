@@ -16,7 +16,7 @@ const Services = () => {
       id: 1,
       title: 'Cinematic Video Editing',
       description: 'Cinematic-quality video production with color grading, advanced transitions, and emotional storytelling. Perfect for travel vlogs, documentaries, and brand videos that demand premium visual aesthetics and professional post-production excellence.',
-      image: 'https://plus.unsplash.com/premium_photo-1682146749338-f380c93c8dec?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y2luZW1hdG9ncmFwaHl8ZW58MHx8MHx8fDA%3D'
+      image: 'https://miro.medium.com/0*qKaI6a9c0mZi5P1P.jpeg'
     },
     {
       id: 2,
@@ -78,7 +78,7 @@ const Services = () => {
   }
 
   return (
-    <section className="services">
+    <section className="services" id="services">
       <div className="services-container">
         <motion.h2
           className="services-title"

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import './Hero.css';
 import { assets } from '../assets/assets'
 import { FaGithub, FaLinkedin, FaTwitter, FaInstagram } from 'react-icons/fa'
-import { px } from 'framer-motion';
 
 const Hero = () => {
   const [imageError, setImageError] = useState(false);
@@ -56,7 +55,17 @@ const Hero = () => {
               <a href="/contact" className="hero-btn primary">
                 Book a free call
               </a>
-              <a href="/project" className="hero-btn secondary">
+              <a
+                href="#work"
+                className="hero-btn secondary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const workSection = document.getElementById('work');
+                  if (workSection) {
+                    workSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
+              >
                 View project
               </a>
             </div>

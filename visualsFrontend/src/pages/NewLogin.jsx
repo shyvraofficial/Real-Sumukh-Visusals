@@ -12,12 +12,15 @@ import {
 } from '../Config';
 
 const NewLogin = () => {
-  const { setToken, backendUrl } = useContext(ShopContext); // Get backendUrl and setToken
+  const { setToken, backendUrl, cartItems } = useContext(ShopContext); // Get backendUrl and setToken
   const [email, setEmail] = useState('');
   const [formVisible, setFormVisible] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(''); 
   const [loading, setLoading] = useState(false);
+  const [linkSent, setLinkSent] = useState(false);
+  const [sentEmail, setSentEmail] = useState('');
+  const [resending, setResending] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,13 +51,17 @@ const NewLogin = () => {
     setLoading(true);
     setError('');
     setSuccess('');
+    const redirectPath = localStorage.getItem('lastVisitedPath') || '/';
 
     try {
-      const response = await axios.post(`${backendUrl}/api/user/send-login-link`, { email });
+      const response = await axios.post(`${backendUrl}/api/user/send-login-link`, { email, redirectPath, cartItems });
       
       if (response.data.success) {
         window.localStorage.setItem('emailForSignIn', email);
-        setSuccess("Check your Gmail! We've sent you a magic sign-in link.");
+        setLinkSent(true);
+        setSentEmail(email);
+        setEmail('');
+        setSuccess("Secure sign-in link sent");
       } else {
         setError(response.data.message);
       }
@@ -62,6 +69,31 @@ const NewLogin = () => {
       setError("Failed to connect to server.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Resend Sign-In Link
+  const handleResendLink = async () => {
+    setResending(true);
+    setError('');
+    const redirectPath = localStorage.getItem('lastVisitedPath') || '/';
+
+    try {
+      const response = await axios.post(`${backendUrl}/api/user/send-login-link`, { 
+        email: sentEmail, 
+        redirectPath, 
+        cartItems 
+      });
+      
+      if (response.data.success) {
+        setSuccess("Link resent successfully");
+      } else {
+        setError(response.data.message);
+      }
+    } catch (err) {
+      setError("Failed to resend link. Please try again.");
+    } finally {
+      setResending(false);
     }
   };
 
@@ -78,14 +110,27 @@ const NewLogin = () => {
         <form onSubmit={handleSubmit} className='space-y-6'>
           <div>
             <label htmlFor="email" className='block text-gray-300 font-medium mb-1'>Email Address</label>
-            <input 
-              required 
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder='Enter Your Email' 
-              className='w-full border-b border-gray-600 bg-transparent text-white px-2 py-1 focus:border-cyan-400 focus:outline-none' 
-            />
+            <div className='relative'>
+              <input 
+                required 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder='Enter Your Email' 
+                className='w-full border-b border-gray-600 bg-transparent text-white px-2 py-1 focus:border-cyan-400 focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed'
+                disabled={linkSent}
+              />
+              {linkSent && (
+                <button
+                  type="button"
+                  onClick={handleResendLink}
+                  disabled={resending}
+                  className='absolute right-0 bottom-1 text-cyan-400 hover:text-cyan-300 disabled:opacity-60 text-xs font-medium transition'
+                >
+                  {resending ? 'Resending...' : 'Resend'}
+                </button>
+              )}
+            </div>
           </div>
 
           <button 
@@ -95,6 +140,27 @@ const NewLogin = () => {
           >
             {loading ? 'Sending Link...' : 'Send Magic Link'}
           </button>
+
+          {linkSent && (
+            <div className='flex items-center gap-2 p-3 bg-green-500/10 rounded-lg border border-green-500/20 relative group'>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className='text-green-400 flex-shrink-0'>
+                <path d="M13.78 4.22a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 011.06-1.06L5.5 10.94l6.97-6.97a.75.75 0 011.06 0z" fill="currentColor"/>
+              </svg>
+              <div className='text-green-400 text-sm flex-1'>
+                <p className='m-0'>Sign-in link sent to <strong>{sentEmail}</strong>. Check your inbox and click it to sign in.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setLinkSent(false)}
+                className='text-green-400 hover:text-green-300 transition flex-shrink-0'
+                aria-label="Close"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12.5 3.5L3.5 12.5M3.5 3.5L12.5 12.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </button>
+            </div>
+          )}
         </form>
 
         <div className='mt-8 flex items-center justify-between'>

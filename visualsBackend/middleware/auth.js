@@ -3,19 +3,13 @@ import admin from '../config/firebaseAdmin.js';
 const authUser = async (req, res, next) => {
   try {
     const header = req.headers.authorization || '';
-    console.log('Auth header:', header.substring(0, 50) + '...');
     
     const [type, idToken] = header.split(' ');
 
     if (type !== 'Bearer' || !idToken) {
-        console.log('Invalid header format. Type:', type, 'Has token:', !!idToken);
-        return res.status(401).json({ success: false, message: 'Not Authorized.' });
+      return res.status(401).json({ success: false, message: 'Not Authorized.' });
     }
-
-    console.log('Verifying token...');
     const decoded = await admin.auth().verifyIdToken(idToken);
-    
-    console.log('Token verified. UID:', decoded.uid, 'Email:', decoded.email);
 
     // Initialize req.body if it doesn't exist (for GET requests)
     if (!req.body) {

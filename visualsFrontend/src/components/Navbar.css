@@ -5,9 +5,9 @@
   left: 0;
   width: 100%;
   z-index: 50;
-  background: #131313;
+  background:black;
   backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(30, 64, 175, 0.4);
+  border-bottom: none;
   margin-bottom: 10px;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
@@ -26,7 +26,7 @@
 /* Inner container – taller bar */
 .navbar-container {
   margin: 0 auto;
-  padding: 0.75rem 1.7rem;  /* was 0.75rem 1.5rem → taller + more space */
+  padding: 0.85rem 1.7rem 0.4rem 1.7rem;  /* was 0.75rem 1.5rem → taller + more space */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -40,10 +40,13 @@
 }
 
 .logo {
-  width: 17rem;
+  width: 15rem;
   font-size: 15px;
   cursor: pointer;
-  margin-right: 3rem;
+  margin-left: 3rem;
+  position: relative;
+  top:10px;
+
 }
 
 /* Nav links centered */

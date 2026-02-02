@@ -6,29 +6,37 @@ import { handleGoogleLogin } from '../Config';
 import './Login.css';
 
 const Login = () => {
-  const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
+  const { token, setToken, navigate, backendUrl, cartItems } = useContext(ShopContext);
   const { success, error: showError } = useContext(NotificationContext);
   const [email, setEmail] = useState('');
   const [sendingLink, setSendingLink] = useState(false);
   const [error, setError] = useState('');
+  const [linkSent, setLinkSent] = useState(false);
+  const [sentEmail, setSentEmail] = useState('');
+  const [resending, setResending] = useState(false);
 
   // Magic Link Logic
   const handleMagicLinkSubmit = async (e) => {
     e.preventDefault();
     setSendingLink(true);
     setError('');
+    const redirectPath = localStorage.getItem('lastVisitedPath') || '/';
 
     try {
       const res = await axios.post(`${backendUrl}/api/user/send-login-link`, {
         email,
+        redirectPath,
+        cartItems,
       });
 
       if (res.data.success) {
         window.localStorage.setItem('emailForSignIn', email);
-        success('Check your email for the login link');
+        setLinkSent(true);
+        setSentEmail(email);
         setEmail('');
+        success('Secure sign-in link sent');
       } else {
-        showError(res.data.message || 'Unable to send login link');
+        showError(res.data.message || 'Unable to send sign-in link');
       }
     } catch (err) {
       console.error(err);
@@ -51,6 +59,32 @@ const Login = () => {
     }
   };
 
+  // Resend Sign-In Link
+  const handleResendLink = async () => {
+    setResending(true);
+    setError('');
+    const redirectPath = localStorage.getItem('lastVisitedPath') || '/';
+
+    try {
+      const res = await axios.post(`${backendUrl}/api/user/send-login-link`, {
+        email: sentEmail,
+        redirectPath,
+        cartItems,
+      });
+
+      if (res.data.success) {
+        success('Link resent successfully');
+      } else {
+        showError(res.data.message || 'Unable to resend link');
+      }
+    } catch (err) {
+      console.error(err);
+      showError('Failed to resend link. Please try again.');
+    } finally {
+      setResending(false);
+    }
+  };
+
   // Auto-Redirect if logged in
   useEffect(() => {
     if (token) {
@@ -65,10 +99,7 @@ const Login = () => {
   return (
     <div className="login-page">
       <div className="login-container">
-        {/* Logo */}
-        <div className="login-logo-wrapper">
-          <h1 className="login-logo">Sumukh Visuals</h1>
-        </div>
+      
 
         {/* Main Form Card */}
         <div className="login-card">
@@ -100,23 +131,55 @@ const Login = () => {
             <div className="login-form-group">
               <label className="login-label">Email</label>
               <p className="login-description">Use an organization email to easily collaborate with teammates</p>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="login-input"
-                placeholder="Enter your email address..."
-              />
+              <div className="login-input-wrapper">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="login-input"
+                  placeholder="Enter your email address..."
+                  disabled={linkSent}
+                />
+                {linkSent && (
+                  <button
+                    type="button"
+                    onClick={handleResendLink}
+                    disabled={resending}
+                    className="login-resend-field-btn"
+                  >
+                    {resending ? 'Resending...' : 'Resend'}
+                  </button>
+                )}
+              </div>
             </div>
 
             <button 
               type="submit" 
               className="login-button login-submit-btn"
-              disabled={sendingLink}
+              disabled={sendingLink || linkSent}
             >
               {sendingLink ? 'Sending...' : 'Continue'}
             </button>
+
+            {linkSent && (
+              <div className="login-success-message">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M13.78 4.22a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 011.06-1.06L5.5 10.94l6.97-6.97a.75.75 0 011.06 0z" fill="currentColor"/>
+                </svg>
+                <p>Sign-in link sent to <strong>{sentEmail}</strong>. Check your inbox and click it to sign in.</p>
+                <button
+                  type="button"
+                  onClick={() => setLinkSent(false)}
+                  className="login-success-close"
+                  aria-label="Close"
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.5 3.5L3.5 12.5M3.5 3.5L12.5 12.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </button>
+              </div>
+            )}
           </form>
 
           {/* Terms & Conditions */}

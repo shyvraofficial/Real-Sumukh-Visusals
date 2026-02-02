@@ -38,13 +38,16 @@ const Contacts = () => {
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE
     const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE
     const userId = import.meta.env.VITE_EMAILJS_USER
-    const receiver = import.meta.env.VITE_CONTACT_RECEIVER || 'support@sumukhvisuals.com'
+    const receiver = import.meta.env.VITE_CONTACT_RECEIVER || 'sumukhvisuals@gmail.com'
 
     const templateParams = {
-      from_name: formData.name,
-      from_email: formData.email,
-      phone: formData.phone,
-      message: formData.message,
+      name: formData.name || 'Not provided',
+      email: formData.email || 'Not provided',
+      phone: formData.phone || 'Not provided',
+      project_type: formData.projectType || 'Not provided',
+      budget: formData.budget || 'Not provided',
+      message: formData.message || 'Not provided',
+      time: new Date().toLocaleString(),
       to_email: receiver
     }
 
@@ -81,12 +84,16 @@ const Contacts = () => {
       return
     }
 
-    const whatsappMessage = `Hi Sumukh! 👋\n\nName: ${name || 'Not provided'}\nEmail: ${email || 'Not provided'}\nPhone: ${phone || 'Not provided'}\n\nMessage:\n${message}`
+    const whatsappMessage = `Hi Sumukh!\n\nName: ${name || 'Not provided'}\nEmail: ${email || 'Not provided'}\nPhone: ${phone || 'Not provided'}\n\nMessage:\n${message}`
     
     const encodedMessage = encodeURIComponent(whatsappMessage)
     const whatsappUrl = `https://wa.me/919084716627?text=${encodedMessage}`
     
     window.open(whatsappUrl, '_blank')
+    
+    // Clear form after sending via WhatsApp
+    setFormData({ name: '', email: '', phone: '', message: '' })
+    success('Message sent via WhatsApp')
   }
 
   const handleEmail = async () => {
@@ -103,10 +110,13 @@ const Contacts = () => {
     const receiver = import.meta.env.VITE_CONTACT_RECEIVER
 
     const templateParams = {
-      from_name: name || 'Visitor',
-      from_email: email || 'noreply@example.com',
+      name: name || 'Not provided',
+      email: email || 'Not provided',
       phone: phone || 'Not provided',
-      message: message,
+      project_type: formData.projectType || 'Not provided',
+      budget: formData.budget || 'Not provided',
+      message: message || 'Not provided',
+      time: new Date().toLocaleString(),
       to_email: receiver
     }
 
@@ -116,12 +126,8 @@ const Contacts = () => {
       }
 
       await emailjs.send(serviceId, templateId, templateParams, userId)
-      setSubmitted(true)
       success('Thank you! Your message has been sent via email')
-      setTimeout(() => {
-        setFormData({ name: '', email: '', phone: '', message: '' })
-        setSubmitted(false)
-      }, 2000)
+      setFormData({ name: '', email: '', phone: '', message: '' })
     } catch (err) {
       console.error('Email send error:', err)
       showError('Unable to send message. Please try again')
@@ -161,7 +167,7 @@ const Contacts = () => {
         initial="hidden"
         animate="visible"
       >
-        <h1>Get In Touch</h1>
+        <h1 className='pt-5'>Get In Touch</h1>
         <p>Have a project in mind? Let's work together to create something amazing</p>
       </motion.div>
 
@@ -279,7 +285,7 @@ const Contacts = () => {
             </svg>
             <div className="info-text">
               <h4>Email</h4>
-              <a href="mailto:support@sumukhvisuals.com">support@sumukhvisuals.com</a>
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=sumukhvisuals@gmail.com" target="_blank" rel="noopener noreferrer">sumukhvisuals@gmail.com</a>
             </div>
           </motion.div>
 
@@ -293,7 +299,7 @@ const Contacts = () => {
             </svg>
             <div className="info-text">
               <h4>WhatsApp</h4>
-              <a href="https://wa.me/919084716627" target="_blank" rel="noopener noreferrer">+91 90847 16627</a>
+              <a href="https://wa.me/919084716627" target="_blank" rel="noopener noreferrer">+91 9084716627</a>
             </div>
           </motion.div>
 
@@ -307,7 +313,7 @@ const Contacts = () => {
             </svg>
             <div className="info-text">
               <h4>Phone</h4>
-              <a href="tel:+919084716627">+91 90847 16627</a>
+              <a href="tel:+919084716627">+91 9084716627</a>
             </div>
           </motion.div>
 

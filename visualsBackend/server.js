@@ -30,17 +30,22 @@
 // app.listen(port,()=>console.log('server started on port:'+port))
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import 'dotenv/config';
 import dns from 'dns';
 import util from 'util';
 import nodemailer from 'nodemailer';
+import validator from 'validator';
 import admin from './config/firebaseAdmin.js';
+import pendingCartModel from './models/pendingCartModel.js';
 import connectDB from './config/mongodb.js';
 import connectCloudinary from './config/cloudinary.js';
 import userRouter from './routes/userRoute.js';
 import productRouter from './routes/productRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
+import { validateBody } from './middleware/validate.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -48,11 +53,45 @@ const port = process.env.PORT || 4000;
 connectDB();
 connectCloudinary();
 
-app.use(express.json());
+app.set('trust proxy', 1);
+app.use(helmet({
+  crossOriginResourcePolicy: false
+}));
+app.use(express.json({ limit: '1mb' }));
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000', process.env.FRONTEND_URL],
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
+
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+app.use('/api/', generalLimiter);
+app.use('/api/user', authLimiter);
 
 const transporter = nodemailer.createTransport({
   host: 'smtp-relay.brevo.com',
@@ -71,20 +110,45 @@ transporter.verify((error) => {
 
 const resolveMx = util.promisify(dns.resolveMx);
 
-app.post('/api/user/send-login-link', async (req, res) => {
-  const { email } = req.body;
+app.post('/api/user/send-login-link', authLimiter, validateBody(['email']), async (req, res) => {
+  const { email, redirectPath, cartItems } = req.body;
   if (!email) {
-    return res.json({ success: false, message: 'Email is required' });
+    return res.status(400).json({ success: false, message: 'Email is required' });
   }
 
   try {
+    const normalizedEmail = String(email).toLowerCase().trim();
+    if (!validator.isEmail(normalizedEmail)) {
+      return res.status(400).json({ success: false, message: 'Invalid email' });
+    }
     const domain = email.split('@')[1];
     await resolveMx(domain);
 
+    if (cartItems && typeof cartItems === 'object') {
+      const normalized = {};
+      Object.entries(cartItems).forEach(([itemId, value]) => {
+        if (value == null) return;
+        if (typeof value === 'object') {
+          normalized[itemId] = Object.values(value).reduce((s, v) => s + (Number(v) || 0), 0);
+        } else {
+          normalized[itemId] = Number(value) || 0;
+        }
+      });
+      await pendingCartModel.findByIdAndUpdate(
+        normalizedEmail,
+        { _id: normalizedEmail, cartData: normalized },
+        { upsert: true, new: true }
+      );
+    }
+
+    const baseUrl = `${process.env.FRONTEND_URL}/finish-login`;
+    const url = new URL(baseUrl);
+    url.searchParams.set('email', email);
+    if (redirectPath) {
+      url.searchParams.set('redirect', redirectPath);
+    }
     const actionCodeSettings = {
-      url: `${process.env.FRONTEND_URL}/finish-login?email=${encodeURIComponent(
-        email
-      )}`,
+      url: url.toString(),
       handleCodeInApp: true
     };
 
@@ -118,18 +182,23 @@ app.post('/api/user/send-login-link', async (req, res) => {
   }
 });
 
-app.post('/api/contact/send-message', async (req, res) => {
+app.post('/api/contact/send-message', authLimiter, validateBody(['name','email','projectType','message']), async (req, res) => {
   const { name, email, phone, projectType, budget, message } = req.body;
 
   if (!name || !email || !projectType || !message) {
-    return res.json({ success: false, message: 'Missing required fields' });
+    return res.status(400).json({ success: false, message: 'Missing required fields' });
+  }
+
+  const normalizedEmail = String(email).toLowerCase().trim();
+  if (!validator.isEmail(normalizedEmail)) {
+    return res.status(400).json({ success: false, message: 'Invalid email' });
   }
 
   try {
     const mailOptions = {
       from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-      to: 'support@sumukhvisuals.com',
-      replyTo: email,
+      to: 'sumukhvisuals@gmail.com',
+      replyTo: normalizedEmail,
       subject: `New Project Inquiry from ${name}`,
       html: `
         <div style="padding:20px;font-family:sans-serif;color:#333">
@@ -146,7 +215,6 @@ app.post('/api/contact/send-message', async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('Contact email sent to:', email);
     res.json({ success: true, message: 'Message sent successfully' });
   } catch (error) {
     console.error('Send contact message error:', error);
@@ -162,45 +230,42 @@ app.use('/api/product', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
 
-// Debug endpoint to test token verification
-app.post('/api/debug/verify-token', async (req, res) => {
-  try {
-    const header = req.headers.authorization || '';
-    console.log('Debug - Auth header received:', !!header);
-    
-    const [type, idToken] = header.split(' ');
-    
-    if (type !== 'Bearer' || !idToken) {
-      return res.json({ success: false, message: 'Invalid header format' });
-    }
-
-    console.log('Debug - Attempting to verify token...');
-    const decoded = await admin.auth().verifyIdToken(idToken);
-    
-    console.log('Debug - Token verified successfully!', { uid: decoded.uid, email: decoded.email });
-    res.json({ 
-      success: true, 
-      message: 'Token verified',
-      decoded: {
-        uid: decoded.uid,
-        email: decoded.email,
-        name: decoded.name
+// Debug endpoint to test token verification (disabled in production)
+if (process.env.NODE_ENV !== 'production') {
+  app.post('/api/debug/verify-token', async (req, res) => {
+    try {
+      const header = req.headers.authorization || '';
+      const [type, idToken] = header.split(' ');
+      
+      if (type !== 'Bearer' || !idToken) {
+        return res.json({ success: false, message: 'Invalid header format' });
       }
-    });
-  } catch (error) {
-    console.error('Debug - Token verification failed:', {
-      message: error.message,
-      code: error.code,
-      fullError: error
-    });
-    res.status(401).json({ 
-      success: false, 
-      message: 'Token verification failed',
-      error: error.message,
-      code: error.code
-    });
-  }
-});
+
+      const decoded = await admin.auth().verifyIdToken(idToken);
+      
+      res.json({ 
+        success: true, 
+        message: 'Token verified',
+        decoded: {
+          uid: decoded.uid,
+          email: decoded.email,
+          name: decoded.name
+        }
+      });
+    } catch (error) {
+      console.error('Debug - Token verification failed:', {
+        message: error.message,
+        code: error.code,
+      });
+      res.status(401).json({ 
+        success: false, 
+        message: 'Token verification failed',
+        error: error.message,
+        code: error.code
+      });
+    }
+  });
+}
 
 app.get('/', (req, res) => {
   res.send('API working');

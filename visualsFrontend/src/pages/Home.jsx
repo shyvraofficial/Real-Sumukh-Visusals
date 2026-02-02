@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import Hero from '../components/Hero'
 import Showreel from '../components/Showreel'
@@ -14,6 +14,20 @@ import LatestCollection from '../components/LatestCollection'
 
 const Portfolio = () => {
   const location = useLocation()
+
+  useEffect(() => {
+    if (location.hash === '#services') {
+      const scrollToServices = () => {
+        const servicesElement = document.getElementById('services')
+        if (servicesElement) {
+          servicesElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }
+
+      const timer = setTimeout(scrollToServices, 50)
+      return () => clearTimeout(timer)
+    }
+  }, [location.hash])
   
   return (
     <div key={location.pathname}>

@@ -1,40 +1,25 @@
-@media (max-width: 968px) {
-  .empty-orders {
-    min-height: 70vh;
-  }
-}
-
-@media (max-width: 640px) {
-  .empty-orders {
-    min-height: 80vh;
-  }
-}
-
-@media (max-width: 480px) {
-  .empty-orders {
-    min-height: 85vh;
-  }
-}
 .orders-container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
   box-sizing: border-box;
-  min-height: 80vh;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 768px) {
   .orders-container {
     padding: 30px 16px;
-    min-height: 85vh;
+    min-height: 100vh;
   }
 }
 
 @media (max-width: 480px) {
   .orders-container {
     padding: 20px 12px;
-    min-height: 90vh;
+    min-height: 100vh;
   }
 }
 
@@ -271,6 +256,12 @@
 .empty-orders {
   text-align: center;
   padding: 60px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
 }
 
 .empty-orders-icon {

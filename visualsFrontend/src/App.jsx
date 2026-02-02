@@ -22,6 +22,7 @@ import NotificationProvider from './context/NotificationContext'
 const App = () => {
   const location = useLocation()
   const isLoginPage = location.pathname === '/login' || location.pathname === '/newlogin' || location.pathname === '/finish-login'
+  const isHomePage = location.pathname === '/'
   
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -37,7 +38,14 @@ const App = () => {
   
   return (
     <NotificationProvider>
-      <div style={{ paddingTop: isLoginPage ? '0px' : '80px' }}>
+      <div
+        style={{
+          paddingTop: isLoginPage ? '0px' : '67px',
+          background: isHomePage && !isLoginPage
+            ? 'linear-gradient(#000 0, #000 80px, transparent 80px)'
+            : 'transparent'
+        }}
+      >
         <Notification />
         {!isLoginPage && <Navbar />}
         <Routes>

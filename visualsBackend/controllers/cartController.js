@@ -1,4 +1,5 @@
 import userModel from "../models/userModel.js";
+import pendingCartModel from "../models/pendingCartModel.js";
 
 // Helper to ensure user exists
 const getOrCreateUser = async (userId, email) => {
@@ -81,4 +82,38 @@ const getUserCart = async (req, res) => {
     }
 }
 
-export { addToCart, updateCart, getUserCart };
+const mergePendingCart = async (req, res) => {
+    try {
+        const { userId, userEmail, email } = req.body;
+        const lookupEmail = String(email || userEmail || '').toLowerCase().trim();
+
+        const userData = await getOrCreateUser(userId, userEmail);
+        if (!lookupEmail) {
+            return res.json({ success: true, cartData: userData.cartData || {} });
+        }
+        const pending = await pendingCartModel.findById(lookupEmail);
+
+        if (!pending || !pending.cartData) {
+            return res.json({ success: true, cartData: userData.cartData || {} });
+        }
+
+        const existing = userData.cartData || {};
+        const merged = { ...existing };
+
+        Object.entries(pending.cartData).forEach(([itemId, value]) => {
+            const qty = Number(value) || 0;
+            if (!merged[itemId]) merged[itemId] = qty;
+            else merged[itemId] = (Number(merged[itemId]) || 0) + qty;
+        });
+
+        await userModel.findByIdAndUpdate(userId, { cartData: merged });
+        await pendingCartModel.findByIdAndDelete(lookupEmail);
+
+        return res.json({ success: true, cartData: merged });
+    } catch (error) {
+        console.log(error);
+        return res.json({ success: false, message: error.message });
+    }
+};
+
+export { addToCart, updateCart, getUserCart, mergePendingCart };

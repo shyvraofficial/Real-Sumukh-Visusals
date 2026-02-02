@@ -311,11 +311,11 @@ const TermsConditions = () => {
       subsections: [
         {
           subtitle: "For Questions or Support:",
-          content: "Email: sumukh@example.com\nResponse Time: Within 24-48 hours"
+          content: "Email: sumukhvisuals@gmail.com\nResponse Time: Within 24-48 hours"
         },
         {
           subtitle: "For Legal Notices:",
-          content: "Email: sumukh@example.com\nSubject: Legal Notice\nOfficial notification must be sent via email"
+          content: "Email: sumukhvisuals@gmail.com\nSubject: Legal Notice\nOfficial notification must be sent via email"
         }
       ]
     }
@@ -384,7 +384,7 @@ const TermsConditions = () => {
         {/* Footer */}
         <motion.div className='policy-footer' variants={itemVariants}>
           <p>
-            If you have questions about these Terms and Conditions, please contact us at <a href="mailto:sumukh@example.com">sumukh@example.com</a>
+            If you have questions about these Terms and Conditions, please contact us at <a href="mailto:sumukhvisuals@gmail.com">sumukhvisuals@gmail.com</a>
           </p>
         </motion.div>
       </div>
