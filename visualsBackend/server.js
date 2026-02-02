@@ -60,13 +60,14 @@ app.use(helmet({
 app.use(express.json({ limit: '1mb' }));
 
 const allowedOrigins = [
+  'https://www.sumukhvisuals.com',
+  'https://sumukhvisuals.com',
+  'https://admin.sumukhvisuals.com', // ONLY if admin is a web app
   'http://localhost:5173',
   'http://localhost:5174',
-  'http://localhost:3000',
-  process.env.FRONTEND_URL,
-  process.env.ADMIN_URL,
-  process.env.VITE_BACKEND_URL
-].filter(Boolean);
+  'http://localhost:3000'
+];
+
 
 app.use(cors({
   origin: (origin, callback) => {
