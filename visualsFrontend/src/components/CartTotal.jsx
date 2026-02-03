@@ -42,12 +42,12 @@ const CartTotal = () => {
                     <h3 className='text-sm font-semibold text-gray-700 mb-2'>Items</h3>
                     <div className='space-y-1'>
                         {cartBreakdown.map((item, index) => (
-                            <div key={index} className='flex justify-between items-center text-xs md:text-sm'>
-                                <div className='flex-1'>
+                            <div key={index} className='flex items-start justify-between gap-2 text-xs md:text-sm'>
+                                <div className='min-w-0 flex-1'>
                                     <p className='text-gray-800 font-medium truncate'>{item.name}</p>
                                     <p className='text-gray-500 text-xs'>Qty: {item.quantity}</p>
                                 </div>
-                                <span className='font-semibold text-gray-900 whitespace-nowrap ml-2'>{currency}{item.total.toFixed(2)}</span>
+                                <span className='shrink-0 font-semibold text-gray-900 whitespace-nowrap'>{currency}{item.total.toFixed(2)}</span>
                             </div>
                         ))}
                     </div>

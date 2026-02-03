@@ -72,7 +72,6 @@ const PlaceOrder = () => {
           fullName,
           email: userEmail, 
           phone,
-          country
         },
         items: orderItems,
         amount: getCartAmount()
@@ -183,14 +182,7 @@ const PlaceOrder = () => {
                 placeholder='Phone Number'
               />
 
-              <input
-                required
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                className='form-input'
-                type="text"
-                placeholder='Country'
-              />
+              
             </div>
 
             <div className='terms-checkbox'>
