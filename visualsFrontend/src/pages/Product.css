@@ -171,6 +171,9 @@
   color: #666;
   line-height: 1.7;
   margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Size Selection */

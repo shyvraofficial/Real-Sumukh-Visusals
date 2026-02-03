@@ -9,7 +9,7 @@ import Login from './components/Login.jsx';
 import NotificationProvider from './context/NotificationContext';
 import Notification from './components/Notification';
 
-export const currency = '$';
+export const currency = '₹';
 
 import { useState,useEffect } from 'react';
 

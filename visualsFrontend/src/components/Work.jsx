@@ -66,7 +66,7 @@ const Work = () => {
           transition={{ duration: 0.8 }} 
           viewport={{ once: true }}
         >
-          Show Reels
+          Featured Work
         </motion.h2>
         
         <motion.div 

@@ -11,6 +11,12 @@ const Services = () => {
   const services = [
     {
       id: 0,
+      title: 'Talking Head Videos',
+      description: 'Professional editing for talking head content, podcasts, and testimonial videos. Includes background removal, lower thirds, B-roll integration, and smooth transitions to create polished, engaging educational and promotional content.',
+      image: talkHeadImg
+    },
+    {
+      id: 1,
       title: 'Gym & Fitness Editing',
       description: 'Professional video editing for fitness content including workout compilations, transformation montages, and motivational fitness videos. I create dynamic edits with music synchronization, transitions, and text overlays to enhance your fitness brand and engage your audience.',
       image: gymEditImg
@@ -20,12 +26,6 @@ const Services = () => {
       title: 'Cinematic Video Editing',
       description: 'Cinematic-quality video production with color grading, advanced transitions, and emotional storytelling. Perfect for travel vlogs, documentaries, and brand videos that demand premium visual aesthetics and professional post-production excellence.',
       image: cinematicImg
-    },
-    {
-      id: 2,
-      title: 'Talking Head Videos',
-      description: 'Professional editing for talking head content, podcasts, and testimonial videos. Includes background removal, lower thirds, B-roll integration, and smooth transitions to create polished, engaging educational and promotional content.',
-      image: talkHeadImg
     },
     {
       id: 3,

@@ -1,6 +1,6 @@
 .work {
   background: #F3F3F3;
-  padding: 80px 20px;
+  padding: 50px 20px;
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -30,7 +30,7 @@
   font-weight: 700;
   text-align: center;
   color: #1a1a1a;
-  margin-bottom:80px !important;
+  margin-bottom:50px !important;
   animation: fadeInUp 0.8s ease-out;
   letter-spacing: -1px;
 }
@@ -226,9 +226,7 @@
     padding: 60px 20px;
   }
 
-  .work-title {
-    margin-bottom: 16px;
-  }
+  
 
   .work-subtitle {
     margin-bottom: 48px;
