@@ -59,6 +59,15 @@ const Work = () => {
   return (
     <section className="work" id="work">
       <div className="work-container">
+        <motion.h2 
+          className="work-title" 
+          initial={{ opacity: 0, y: -20 }} 
+          whileInView={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.8 }} 
+          viewport={{ once: true }}
+        >
+          Show Reels
+        </motion.h2>
         
         <motion.div 
           className="projects-grid" 
