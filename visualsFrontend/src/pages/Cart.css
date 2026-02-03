@@ -376,7 +376,15 @@
 
 @media (max-width: 490px) {
   .cart-page {
-    padding: 16px 8px;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 12px 6px !important;
+    overflow-x: hidden !important;
+  }
+
+  .cart-page * {
+    box-sizing: border-box;
   }
 
   .cart-header h1 {
