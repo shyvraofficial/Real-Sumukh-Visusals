@@ -160,7 +160,7 @@
 .price-value {
   font-size: clamp(26px, 2.6vw, 40px);
   font-weight: 800;
-  color: #22c55e;
+  color: #131313 !important;
   letter-spacing: -0.6px;
   line-height: 1;
 }
