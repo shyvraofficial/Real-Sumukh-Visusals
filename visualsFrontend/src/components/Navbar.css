@@ -76,7 +76,7 @@
 }
 
 /* Apply offset only on large screens (when menu button is not visible) */
-@media (min-width: 110px) {
+@media (min-width:1100px) {
   .nav-right {
     position: relative;
     left: 55px;
