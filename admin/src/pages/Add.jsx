@@ -26,6 +26,16 @@ const Add = ({ token }) => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+
+    // Prevent sending too large payloads to the server (Vercel limit)
+    const files = [image1, image2, image3, image4].filter(Boolean);
+    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+    const MAX_TOTAL_SIZE = 4 * 1024 * 1024; // 4MB combined
+
+    if (totalSize > MAX_TOTAL_SIZE) {
+      showError('Total image size is too large. Please keep all images under 4MB combined.');
+      return;
+    }
     try {
       const formData = new FormData();
       formData.append("name", name)
