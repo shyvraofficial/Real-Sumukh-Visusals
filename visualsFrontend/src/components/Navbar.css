@@ -73,8 +73,14 @@
 .nav-right {
   flex-shrink: 0;
   order: 3;
-  position: relative;
-  left: 55px;
+}
+
+/* Apply offset only on large screens (when menu button is not visible) */
+@media (min-width: 110px) {
+  .nav-right {
+    position: relative;
+    left: 55px;
+  }
 }
 
 .nav-links a {
