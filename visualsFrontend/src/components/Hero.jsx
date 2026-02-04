@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import './Hero.css';
 import { assets } from '../assets/assets'
-import { FaGithub, FaLinkedin, FaTwitter, FaInstagram } from 'react-icons/fa'
+import { FaWhatsapp, FaLinkedin, FaTwitter, FaInstagram } from 'react-icons/fa'
 
 const Hero = () => {
   const [imageError, setImageError] = useState(false);
@@ -16,10 +16,10 @@ const Hero = () => {
   };
 
   const socials = [
-    { icon: FaGithub, link: 'https://github.com/', label: 'GitHub' },
-    { icon: FaLinkedin, link: 'https://linkedin.com/', label: 'LinkedIn' },
-    { icon: FaTwitter, link: 'https://twitter.com/', label: 'Twitter' },
-    { icon: FaInstagram, link: 'https://instagram.com/', label: 'Instagram' }
+    { icon: FaWhatsapp, link: 'https://wa.me/919084716627', label: 'WhatsApp' },
+    { icon: FaLinkedin, link: 'https://www.linkedin.com/in/sumukh-visuals-4803773aa/', label: 'LinkedIn' },
+    { icon: FaTwitter, link: 'https://x.com/sumukhvisuals', label: 'Twitter' },
+    { icon: FaInstagram, link: 'https://www.instagram.com/sumukh.visuals/', label: 'Instagram' }
   ];
 
   useEffect(() => {

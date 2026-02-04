@@ -36,7 +36,7 @@
 /* Inner container – taller bar */
 .navbar-container {
   margin: 0 auto;
-  padding: 0.85rem 1.7rem 0.4rem 1.7rem;  /* was 0.75rem 1.5rem → taller + more space */
+  padding: 0.85rem 1.3rem 0.4rem 1.5rem;  /* was 0.75rem 1.5rem → taller + more space */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -53,7 +53,6 @@
   width: 15rem;
   font-size: 15px;
   cursor: pointer;
-  margin-left: 3rem;
   position: relative;
   top:10px;
 
@@ -74,6 +73,8 @@
 .nav-right {
   flex-shrink: 0;
   order: 3;
+  position: relative;
+  left: 55px;
 }
 
 .nav-links a {

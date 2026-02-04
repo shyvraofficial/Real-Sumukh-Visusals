@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { FaInstagram, FaYoutube, FaLinkedin, FaTwitter, FaArrowRight } from 'react-icons/fa'
+import { FaInstagram, FaWhatsapp, FaLinkedin, FaTwitter, FaArrowRight } from 'react-icons/fa'
 import { useLocation, useNavigate } from 'react-router-dom'
 import './Footer.css'
 
@@ -39,10 +39,10 @@ const Footer = () => {
   }
 
   const socialLinks = [
-    { icon: FaInstagram, href: 'https://instagram.com/sumukhvisuals', label: 'Instagram' },
-    { icon: FaYoutube, href: 'https://youtube.com/@sumukhvisuals', label: 'YouTube' },
-    { icon: FaLinkedin, href: 'https://linkedin.com/in/sumukhvisuals', label: 'LinkedIn' },
-    { icon: FaTwitter, href: 'https://twitter.com/sumukhvisuals', label: 'Twitter' }
+    { icon: FaInstagram, href: 'https://www.instagram.com/sumukh.visuals/', label: 'Instagram' },
+    { icon: FaWhatsapp, href: 'https://wa.me/919084716627', label: 'WhatsApp' },
+    { icon: FaLinkedin, href: 'https://www.linkedin.com/in/sumukh-visuals-4803773aa/', label: 'LinkedIn' },
+    { icon: FaTwitter, href: 'https://x.com/sumukhvisuals', label: 'Twitter' }
   ]
 
   return (
