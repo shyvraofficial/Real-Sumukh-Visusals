@@ -1,5 +1,6 @@
 import userModel from "../models/userModel.js";
 import pendingCartModel from "../models/pendingCartModel.js";
+import productModel from "../models/productModel.js";
 
 // Helper to ensure user exists
 const getOrCreateUser = async (userId, email) => {
@@ -63,9 +64,14 @@ const getUserCart = async (req, res) => {
         const userData = await getOrCreateUser(userId, userEmail); // Ensure user exists
         let cartData = userData.cartData || {};
 
-        // Ensure values are numbers (flatten any legacy nested shapes)
+        // Fetch all existing product IDs
+        const allProducts = await productModel.find({}, '_id');
+        const validProductIds = new Set(allProducts.map(p => String(p._id)));
+
+        // Ensure values are numbers (flatten any legacy nested shapes) and filter out deleted products
         const normalized = {};
         Object.entries(cartData).forEach(([itemId, value]) => {
+            if (!validProductIds.has(itemId)) return; // skip deleted products
             if (value == null) return;
             if (typeof value === 'object') {
                 const sum = Object.values(value).reduce((s, v) => s + (Number(v) || 0), 0);

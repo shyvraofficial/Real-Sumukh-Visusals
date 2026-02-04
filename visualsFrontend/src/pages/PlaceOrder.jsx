@@ -17,7 +17,6 @@ const PlaceOrder = () => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [country, setCountry] = useState('');
-  const [acceptTerms, setAcceptTerms] = useState(false);
 
   const initPay=(order)=>{
     const options={
@@ -48,10 +47,6 @@ const PlaceOrder = () => {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     
-    if (!acceptTerms) {
-      showError('Please accept the terms and conditions');
-      return;
-    }
 
     try {
       let orderItems = [];
@@ -185,17 +180,6 @@ const PlaceOrder = () => {
               
             </div>
 
-            <div className='terms-checkbox'>
-              <label className='checkbox-label'>
-                <input
-                  type="checkbox"
-                  checked={acceptTerms}
-                  onChange={(e) => setAcceptTerms(e.target.checked)}
-                  className='checkbox-input'
-                />
-                <span>I agree to the terms and conditions</span>
-              </label>
-            </div>
           </div>
 
           {/* Order Summary Sidebar */}

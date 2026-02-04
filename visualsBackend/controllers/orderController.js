@@ -14,22 +14,29 @@ const razorpayInstance=new razorpay({
 
 const placeOrder = async (req, res) => {
     try {
-        const { userId, items, amount, address} = req.body
+        const { userId, items, amount, address} = req.body;
+        // Ensure only the first image is saved for each product
+        const filteredItems = items.map(item => {
+            if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+                return { ...item, images: [item.images[0]] };
+            }
+            return item;
+        });
         const orderData = {
             userId,
-            items,
+            items: filteredItems,
             amount,
             address,
             paymentMethod: "COD",
             payment: false,
             date: Date.now()
-        }
-        const newOrder = new orderModel(orderData)
-        await newOrder.save()
+        };
+        const newOrder = new orderModel(orderData);
+        await newOrder.save();
 
-        await userModel.findByIdAndUpdate(userId, {cartData: {}})
+        await userModel.findByIdAndUpdate(userId, {cartData: {}});
 
-        res.json({success: true, message: "Order Placed"})
+        res.json({success: true, message: "Order Placed"});
     }
     catch (error){
         console.log(error)
@@ -45,18 +52,25 @@ const placeOrderStripe = async (req, res) => {
 // Placing orders using Razorpay method
 const placeOrderRazorpay = async (req, res) => {
     try {
-        const { userId, items, amount, address} = req.body
+        const { userId, items, amount, address} = req.body;
+        // Ensure only the first image is saved for each product
+        const filteredItems = items.map(item => {
+            if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+                return { ...item, images: [item.images[0]] };
+            }
+            return item;
+        });
         const orderData = {
             userId,
-            items,
+            items: filteredItems,
             amount,
             address,
             paymentMethod: "Razorpay",
             payment: false,
             date: Date.now()
-        }
-        const newOrder = new orderModel(orderData)
-        await newOrder.save()
+        };
+        const newOrder = new orderModel(orderData);
+        await newOrder.save();
 
         const options={
             amount:amount*100,

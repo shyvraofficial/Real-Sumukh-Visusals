@@ -1,3 +1,8 @@
+@media (max-width: 627px) {
+  .orders-container {
+    padding-top: 30px !important;
+  }
+}
 .orders-container {
   width: 100%;
   max-width: 1200px;

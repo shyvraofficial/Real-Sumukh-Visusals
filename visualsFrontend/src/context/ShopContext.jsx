@@ -1,16 +1,19 @@
 import { createContext, useEffect, useState, useMemo } from "react";
+
+// Clean up cart items that no longer exist in products
+// (The useEffect for this logic should be placed inside the ShopContextProvider component, not at the top level)
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { onAuthStateChanged, signOut } from 'firebase/auth'; // Import signOut
 import { auth } from '../Config';
 
 export const ShopContext = createContext();
-export const API_BASE_URL = 'https://api.sumukhvisuals.com';
+// Use VITE_BACKEND_URL from environment
 
 const ShopContextProvider = (props) => {
     const currency = '₹';
     const delivery_fee = 10;
-    const backendUrl = API_BASE_URL;
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
     const [cartItems, setCartItems] = useState(() => {
@@ -126,15 +129,18 @@ const ShopContextProvider = (props) => {
                     }
                 });
 
-                // Normalize local cart (from current state/localStorage)
+                // Normalize local cart (from current state/localStorage) and filter out deleted products
                 const localRaw = (() => {
                     try {
                         const saved = localStorage.getItem('cartItems');
                         return saved ? JSON.parse(saved) : {};
                     } catch (e) { return {}; }
                 })();
+                // Only keep items that exist in the current products list
+                const validProductIds = new Set(products.map(p => String(p._id)));
                 const normalizedLocal = {};
                 Object.entries(localRaw).forEach(([itemId, value]) => {
+                    if (!validProductIds.has(itemId)) return;
                     if (value == null) return;
                     if (typeof value === 'object') {
                         normalizedLocal[itemId] = Object.values(value).reduce((s, v) => s + (Number(v) || 0), 0);
@@ -156,6 +162,13 @@ const ShopContextProvider = (props) => {
                 } else {
                     merged = Object.keys(normalizedServer).length ? normalizedServer : normalizedLocal;
                 }
+
+                // Remove all items with quantity 0 from merged cart
+                Object.keys(merged).forEach(itemId => {
+                    if (!merged[itemId] || merged[itemId] <= 0) {
+                        delete merged[itemId];
+                    }
+                });
 
                 console.log('getUserCart: server:', normalizedServer, 'local:', normalizedLocal, 'mergedChoice:', persistToServer ? 'sum' : 'prefer-server', 'result:', merged);
                 setCartItems(merged);
@@ -189,23 +202,41 @@ const ShopContextProvider = (props) => {
         }
     };
 
-    // Validate cart - remove items that no longer exist
-    const validateCart = (productsToCheck = products) => {
+
+    // Validate cart - remove items only when the product is deleted from admin panel (not just when quantity is 0)
+    const validateCart = async (productsToCheck = products) => {
         if (!productsToCheck || productsToCheck.length === 0) return;
 
         setCartItems(prevCart => {
             const validatedCart = { ...prevCart };
             let hasChanges = false;
 
-            Object.keys(validatedCart).forEach(itemId => {
+            for (const itemId of Object.keys(validatedCart)) {
                 const productExists = productsToCheck.find(p => p._id === itemId);
                 if (!productExists) {
                     delete validatedCart[itemId];
                     hasChanges = true;
+                    // Remove from server cart if logged in
+                    if (token) {
+                        try {
+                            axios.post(
+                                `${backendUrl}/api/cart/update`,
+                                { itemId, quantity: 0 },
+                                { headers: { Authorization: `Bearer ${token}` } }
+                            );
+                        } catch (err) {
+                            console.log('Error removing invalid cart item from server:', err);
+                        }
+                    }
                 }
-            });
+            }
 
-            return hasChanges ? validatedCart : prevCart;
+            if (hasChanges) {
+                try { localStorage.setItem('cartItems', JSON.stringify(validatedCart)); } catch (e) {}
+                // Force cart count update by returning a new object
+                return { ...validatedCart };
+            }
+            return prevCart;
         });
     };
 

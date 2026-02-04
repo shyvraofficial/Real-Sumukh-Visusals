@@ -55,20 +55,18 @@ const Orders = ({ token }) => {
               </div>
 
               <p className="mt-3 mb-2 font-medium">
-                {order.address.firstName + ' ' + order.address.lastName}
+                {order.address.fullName}
               </p>
-
-              <div>
-                <p>{order.address.street + ','}</p>
-                <p>
-                  {order.address.city + ', ' +
-                    order.address.state + ', ' +
-                    order.address.country + ', ' +
-                    order.address.zipcode}
+              {order.address.email && (
+                <p className="mb-2 text-blue-700 font-semibold text-xs break-all">
+                  Email: {order.address.email}
                 </p>
-              </div>
-
-              <p>{order.address.phone}</p>
+              )}
+              {order.address.phone && (
+                <p className="mb-2 text-xs">
+                  Phone: {order.address.phone}
+                </p>
+              )}
             </div>
 
             <div>

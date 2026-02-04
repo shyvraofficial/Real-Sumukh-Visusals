@@ -73,9 +73,11 @@ app.use('/api', (req, res, next) => {
 });
 
 const allowedOrigins = new Set([
-  'https://www.sumukhvisuals.com',
+ 
+  'https://admin.sumukhvisuals.com', // frontend local
+  'https://api.sumukhvisuals.com',
   'https://sumukhvisuals.com',
-  'https://admin.sumukhvisuals.com',
+   // admin local
 ]);
 
 app.use(cors({

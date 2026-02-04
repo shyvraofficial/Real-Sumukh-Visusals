@@ -1,3 +1,5 @@
+
+
 .cart-page {
   width: 100%;
   max-width: 1200px;
@@ -5,7 +7,9 @@
   padding: 40px 20px;
   box-sizing: border-box;
   overflow-x: hidden;
+  min-height: 100vh;
 }
+
 
 .cart-page * {
   box-sizing: border-box;
@@ -385,12 +389,12 @@
     width: 100% !important;
     max-width: none !important;
     margin: 0 auto !important;
-    padding: 30px 6px 12px 6px !important;
-    padding-top: 30px !important;
+    padding-top: 50px !important;
     overflow-x: hidden !important;
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
+    position: relative !important;
   }
 
   .cart-page * {

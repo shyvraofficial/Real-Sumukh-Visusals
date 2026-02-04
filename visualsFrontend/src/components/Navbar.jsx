@@ -69,6 +69,24 @@ export default function Navbar() {
 
         {/* Right side: search, cart, and auth */}
         <div className="nav-right">
+                    {/* Shop button (left of cart icon) - only show on small screens when menu is NOT open */}
+                    {!isOpen && (
+                      <button
+                        className="nav-auth-btn nav-shop-btn shop-mobile-only"
+                        onClick={() => navigate('/collection')}
+                        style={{
+                          marginRight: '2px',
+                          padding: '4px 10px',
+                          fontSize: '13px',
+                          minWidth: 'unset',
+                          fontWeight: 500
+                        }}
+                      >
+                        Shop
+                      </button>
+                    )}
+          {/* Shop button (left of cart icon) - only show on mobile menu */}
+          {/* The Shop button is now only in the mobile menu below */}
           {/* Search icon */}
           <img
             onClick={() => {
@@ -163,6 +181,16 @@ export default function Navbar() {
               {item.label}
             </NavLink>
           ))}
+
+          {/* Shop Button for mobile menu */}
+          <NavLink
+            to="/collection"
+            className="mobile-nav-item"
+            onClick={() => setIsOpen(false)}
+            style={{ fontWeight: 600, background: '#222', color: '#fff', borderRadius: 6, padding: '12px 0', margin: '12px 0' }}
+          >
+            Shop
+          </NavLink>
 
           {/* Auth on mobile */}
           {isLoggedIn ? (

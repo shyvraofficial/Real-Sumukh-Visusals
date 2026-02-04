@@ -4,6 +4,10 @@ import './Services.css'
 import gymEditImg from './assets2.o/gynedit.jpg'
 import cinematicImg from './assets2.o/cinematography.jpg'
 import talkHeadImg from './assets2.o/talkhead.jpg'
+import mock from './assets2.o/mock.jpg'
+import aigen from './assets2.o/aigen.jpg'
+
+
 
 const Services = () => {
   const [activeTab, setActiveTab] = useState(0)
@@ -31,13 +35,13 @@ const Services = () => {
       id: 3,
       title: 'AI-Generated Content Creation',
       description: 'Cutting-edge AI-powered video content creation combining AI avatars, text-to-speech narration, and automated editing. Perfect for fast-turnaround social media videos, explainer content, and scalable video production without extensive manual editing.',
-      image: 'https://thumbs.dreamstime.com/b/ai-creating-personalized-content-video-marketing-entice-artificial-intelligence-enhances-generating-analyzes-data-to-409116119.jpg'
+      image: aigen
     },
     {
       id: 4,
       title: 'Clothing Brand Mockups',
       description: 'Professional product visualization and mockup design for clothing brands. Create stunning product demonstrations, fashion show edits, and lifestyle integration videos that showcase your apparel in the best possible light.',
-      image: 'https://images.unsplash.com/photo-1696086152513-c74dc1d4b135?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNsb3RoaW5nJTIwbW9ja3VwfGVufDB8fDB8fHww'
+      image: mock
     }
   ]
 

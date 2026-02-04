@@ -42,7 +42,7 @@ const WhyMe = () => {
 
   const stats = [
     { number: '50+', label: 'Projects Completed' },
-    { number: '35+', label: 'Clients Worked With' },
+    { number: '35+', label: 'Satisfied Clients' },
     { number: '100%', label: 'Client Satisfaction' },
     { number: '24h', label: 'Quick Turnaround' }
   ]

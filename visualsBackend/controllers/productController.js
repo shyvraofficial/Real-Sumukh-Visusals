@@ -1,6 +1,7 @@
 import {v2 as cloudinary} from 'cloudinary';
 import productModel from '../models/productModel.js';
 import userModel from '../models/userModel.js';
+import pendingCartModel from '../models/pendingCartModel.js';
 
 cloudinary.config({ 
     cloud_name: process.env.CLOUDINARY_NAME, 
@@ -26,9 +27,16 @@ const addProduct = async (req, res) => {
         const images = [image1, image2, image3, image4].filter((item) => item !== undefined);
 
         // Upload images to Cloudinary
+        const now = new Date();
+        const dateString = now.toISOString().replace(/[:.]/g, '-');
         let imagesUrl = await Promise.all(
-            images.map(async (item) => {
-                let result = await cloudinary.uploader.upload(item.path, { resource_type: 'image' });
+            images.map(async (item, idx) => {
+                // Create a custom public_id for easier identification
+                const customPublicId = `product_${name.replace(/\s+/g, '_')}_${dateString}_${idx+1}`;
+                let result = await cloudinary.uploader.upload(item.path, {
+                    resource_type: 'image',
+                    public_id: customPublicId
+                });
                 return {
                     url: result.secure_url,
                     public_id: result.public_id
@@ -81,19 +89,31 @@ const listProducts = async (req, res) => {
         try {
             const productId = req.body.id;
             const product = await productModel.findById(productId);
-    
             if (!product) {
                 return res.json({ success: false, message: "Product not found" });
             }
-    
-            // Delete all cloudinary images
+
+            // Delete all cloudinary images except the one used for downloadLink
+            let downloadPublicId = null;
+            let dateString = product.date ? new Date(product.date).toISOString().replace(/[:.]/g, '-') : null;
+            if (product.downloadLink) {
+                const match = product.images.find(img => img.url === product.downloadLink);
+                if (match) {
+                    downloadPublicId = match.public_id;
+                }
+            }
             await Promise.all(
-                product.images.map(img =>
-                    cloudinary.uploader.destroy(img.public_id)
-                )
+                product.images
+                    .filter(img => {
+                        // Do not delete if public_id matches downloadPublicId or contains the product date
+                        if (img.public_id === downloadPublicId) return false;
+                        if (dateString && img.public_id.includes(dateString)) return false;
+                        return true;
+                    })
+                    .map(img => cloudinary.uploader.destroy(img.public_id))
             );
-    
-            // Remove product from all user carts by fetching and updating each user
+
+            // Remove product from all user carts
             const users = await userModel.find({});
             for (let user of users) {
                 if (user.cartData && user.cartData[productId]) {
@@ -101,10 +121,16 @@ const listProducts = async (req, res) => {
                     await user.save();
                 }
             }
-    
+
+            // Remove product from all pending (guest) carts
+            await pendingCartModel.updateMany(
+                { ["cartData." + productId]: { $exists: true } },
+                { $unset: { ["cartData." + productId]: "" } }
+            );
+
             // Delete the product record
             await productModel.findByIdAndDelete(productId);
-    
+
             res.json({ success: true, message: "Product removed & images deleted" });
         }
         catch (error) {
