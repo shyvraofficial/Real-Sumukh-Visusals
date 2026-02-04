@@ -79,7 +79,10 @@ export default function Navbar() {
                           padding: '4px 10px',
                           fontSize: '13px',
                           minWidth: 'unset',
-                          fontWeight: 500
+                          fontWeight: 500,
+                          background: 'transparent',
+                          color: '#e5e7eb',
+                          borderColor: 'rgba(148, 163, 184, 0.6)'
                         }}
                       >
                         Shop
@@ -181,16 +184,6 @@ export default function Navbar() {
               {item.label}
             </NavLink>
           ))}
-
-          {/* Shop Button for mobile menu */}
-          <NavLink
-            to="/collection"
-            className="mobile-nav-item"
-            onClick={() => setIsOpen(false)}
-            style={{ fontWeight: 600, background: '#222', color: '#fff', borderRadius: 6, padding: '12px 0', margin: '12px 0' }}
-          >
-            Shop
-          </NavLink>
 
           {/* Auth on mobile */}
           {isLoggedIn ? (
