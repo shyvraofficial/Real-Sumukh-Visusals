@@ -19,6 +19,8 @@ const Add = ({ token }) => {
   const [bestseller, setBestseller] = useState(false)
   const { success, error: showError } = useContext(NotificationContext);
 
+  const MAX_IMAGE_SIZE = 3 * 1024 * 1024; // 3MB per image
+
   const categoryOptions = ["Assets", "Packs", "Free", "Support"]
   const subCategoryOptions = ["Sound Effects", "Overlays and Transitions", "Text Animation and MOGRTs"]
 
@@ -64,14 +66,29 @@ const Add = ({ token }) => {
       <div className='w-full'>
         <p className='mb-2 text-base font-medium text-gray-700'>Upload Image</p>
         <div className='flex gap-2 flex-wrap'>
-          {[image1, image2, image3, image4].map((img, index) => (
+           {[image1, image2, image3, image4].map((img, index) => (
              <label key={index} htmlFor={`image${index}`} className='cursor-pointer group'>
                 {/* Fixed size containers that don't shrink */}
-                <div className='w-20 h-20 sm:w-24 sm:h-24 bg-white border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg hover:border-[#333] transition-colors overflow-hidden'>
+                 <div className='w-20 h-20 sm:w-24 sm:h-24 bg-white border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg hover:border-[#333] transition-colors overflow-hidden'>
                    <img className='w-full h-full object-cover' src={!img ? assets.upload_area : URL.createObjectURL(img)} alt="" />
-                </div>
-                <input onChange={(e) => [setImage1, setImage2, setImage3, setImage4][index](e.target.files[0])} type="file" id={`image${index}`} hidden />
-             </label>
+                 </div>
+                 <input
+                  type="file"
+                  id={`image${index}`}
+                  hidden
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    if (file.size > MAX_IMAGE_SIZE) {
+                     showError(`Please upload images under 3MB. Selected file is ${(file.size / (1024 * 1024)).toFixed(1)}MB`);
+                     e.target.value = '';
+                     return;
+                    }
+                    [setImage1, setImage2, setImage3, setImage4][index](file);
+                  }}
+                 />
+               </label>
           ))}
         </div>
       </div>
