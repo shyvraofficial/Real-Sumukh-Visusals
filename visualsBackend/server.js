@@ -74,10 +74,11 @@ app.use('/api', (req, res, next) => {
 
 const allowedOrigins = new Set([
  
-  'https://admin.sumukhvisuals.com', // frontend local
-  'https://api.sumukhvisuals.com',
   'https://sumukhvisuals.com',
-   // admin local
+  'https://www.sumukhvisuals.com',
+  'https://admin.sumukhvisuals.com',
+  'https://api.sumukhvisuals.com',
+   // allowed production domains
 ]);
 
 app.use(cors({
