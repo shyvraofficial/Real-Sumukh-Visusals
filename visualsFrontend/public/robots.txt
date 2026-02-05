@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /.env
+Disallow: /.git
+Sitemap: https://www.sumukhvisuals.com/sitemap.xml

@@ -4,7 +4,7 @@ import './CTA.css'
 
 const CTA = () => {
   const handleWhatsApp = () => {
-    window.open('https://wa.me/917xxxx-xxxx?text=Hi%20Sumukh%2C%20I%20want%20to%20discuss%20a%20video%20project', '_blank')
+    window.open('https://wa.me/919084716627?text=Hi%20Sumukh%2C%20I%20want%20to%20discuss%20a%20video%20project', '_blank')
   }
 
   const titleVariants = {
