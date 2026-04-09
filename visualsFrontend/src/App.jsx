@@ -109,7 +109,7 @@ const App = () => {
           <Route
             path='/client/dashboard'
             element={
-              clientData ? (
+              localStorage.getItem('token') ? (
                 <ClientDashboard
                   clientData={clientData}
                   projects={[]}
@@ -124,7 +124,7 @@ const App = () => {
           <Route
             path='/client/project/:projectId'
             element={
-              clientData ? (
+              localStorage.getItem('token') ? (
                 <ClientProjectDetail 
                   clientData={clientData} 
                   projects={mockProjects}
@@ -138,7 +138,7 @@ const App = () => {
           <Route
             path='/client/reel/:projectId/:reelNumber'
             element={
-              clientData ? (
+              localStorage.getItem('token') ? (
                 <ClientReelDetail />
               ) : (
                 <Navigate to='/login' replace />
