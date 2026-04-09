@@ -49,8 +49,11 @@ const allowedOrigins = new Set([
  
   
   'https://sumukhvisuals.com',
+  'https://www.sumukhvisuals.com',
   'https://api.sumukhvisuals.com',
-  'https://admin.sumukhvisuals.com'
+  'https://www.api.sumukhvisuals.com',
+  'https://admin.sumukhvisuals.com',
+  'https://www.admin.sumukhvisuals.com'
    // allowed production domains
 ]);
 
