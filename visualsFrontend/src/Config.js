@@ -8,15 +8,15 @@ import {
   isSignInWithEmailLink
 } from 'firebase/auth';
 
-// Firebase Configuration
+// Firebase Configuration - Uses environment variables, falls back to defaults
 const firebaseConfig = {
-  apiKey: 'AIzaSyDykX7dsfBtBLLJQZCoseKFiKUzKu4ezuo',
-  authDomain: 'sumukhvisuals.firebaseapp.com',
-  projectId: 'sumukhvisuals',
-  storageBucket: 'sumukhvisuals.firebasestorage.app',
-  messagingSenderId: '139618548157',
-  appId: '1:139618548157:web:7c59a12dd6c53dcaa6fad4',
-  measurementId: 'G-57QZQ6884V',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyDykX7dsfBtBLLJQZCoseKFiKUzKu4ezuo',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'sumukhvisuals.firebaseapp.com',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'sumukhvisuals',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'sumukhvisuals.firebasestorage.app',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '139618548157',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:139618548157:web:7c59a12dd6c53dcaa6fad4',
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || 'G-57QZQ6884V',
 };
 
 // Initialize Firebase
@@ -75,7 +75,15 @@ export const handleGoogleLogin = async (setError) => {
     const idToken = await user.getIdToken();
     console.log('Google login successful:', user.email);
     if (setError) setError('');
-    return idToken;
+    
+    // Return user info along with token
+    return {
+      token: idToken,
+      uid: user.uid,
+      email: user.email,
+      name: user.displayName || user.email.split('@')[0],
+      avatar: user.photoURL,
+    };
   } catch (err) {
     console.error('Google Login Error:', err);
     const errorMessage = err.code === 'auth/popup-closed-by-user' 

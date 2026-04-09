@@ -13,6 +13,27 @@ const Product = () => {
   const [image, setImage] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
+  const handleShare = async () => {
+    const shareData = {
+      title: productData.name,
+      text: `Check out: ${productData.name} - ${currency} ${productData.price}`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        success('Link copied to clipboard!');
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.log('Share error:', error);
+      }
+    }
+  };
+
   const fetchProductData = () => {
     const product = products.find((item) => item._id === productId);
 
@@ -37,7 +58,23 @@ const Product = () => {
           {/* Main Image */}
           <div className="main-image-container">
             {image && (
-              <img src={image.url} alt={productData.name} className="main-image" />
+              <>
+                <img src={image.url} alt={productData.name} className="main-image" />
+                <button 
+                  className="share-button-overlay" 
+                  onClick={handleShare}
+                  title="Share this product"
+                  aria-label="Share product"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                  </svg>
+                </button>
+              </>
             )}
           </div>
 
@@ -117,20 +154,16 @@ const Product = () => {
           {/* Benefits */}
           <div className="benefits-section">
             <div className="benefit">
-              <span className="benefit-icon">✓</span>
-              <span className="benefit-text">⚡ Instant access after purchase (digital download)</span>
+              <span className="benefit-text">Instant access after purchase (digital download)</span>
             </div>
             <div className="benefit">
-              <span className="benefit-icon">✓</span>
-              <span className="benefit-text">🎬 Built for creators (VFX, SFX, fonts & editing assets)</span>
+              <span className="benefit-text">Built for creators (VFX, SFX, fonts & editing assets)</span>
             </div>
             <div className="benefit">
-              <span className="benefit-icon">✓</span>
-              <span className="benefit-text">🔒 Secure checkout + receipt by email</span>
+              <span className="benefit-text">Secure checkout + receipt by email</span>
             </div>
             <div className="benefit">
-              <span className="benefit-icon">✓</span>
-              <span className="benefit-text">💬 Support available if you need help</span>
+              <span className="benefit-text">Support available if you need help</span>
             </div>
           </div>
         </div>

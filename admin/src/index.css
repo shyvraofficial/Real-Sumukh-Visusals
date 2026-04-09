@@ -4,15 +4,47 @@
 @import 'tailwindcss/utilities';
 
 * {
-  font-family: 'Outfit';
+  font-family: 'Outfit', system-ui, sans-serif;
 }
 
-select, input, textarea{
-  border: 1px solid #c2c2c2;
-  outline-color: #c586a5;
+/* Dark theme base styles */
+body {
+  @apply bg-gray-900 text-white;
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #404040;
   border-radius: 4px;
 }
-.active {
-  background-color: #dcdcdc;
-  border-color: #000000;
+
+::-webkit-scrollbar-thumb:hover {
+  background: #505050;
+}
+
+/* Form inputs default styles */
+select, input, textarea {
+  border: 1px solid #404040;
+  outline-color: #606060;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+select:focus, input:focus, textarea:focus {
+  border-color: #606060;
+  box-shadow: 0 0 0 3px rgba(96, 96, 96, 0.1);
+}
+
+/* Smooth transitions */
+a {
+  @apply transition-colors duration-200;
 }

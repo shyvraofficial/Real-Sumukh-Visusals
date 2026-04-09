@@ -1,33 +1,3 @@
-// import express from 'express'
-// import cors from 'cors'
-// import 'dotenv/config'
-// import connectDB from './config/mongodb.js'
-// import connectCloudinary from './config/cloudinary.js'
-// import userRouter from './routes/userRoute.js'
-// import productRouter from './routes/productRoute.js'
-// import cartRouter from './routes/cartRoute.js'
-// import orderRouter from './routes/orderRoute.js'
-
-// //App config
-// const app=express();
-// const port= process.env.PORT || 4000
-// connectDB()
-// connectCloudinary()
-
-// //middlewares
-// app.use(express.json())
-// app.use(cors());
-
-// //api endpoints
-// app.use('/api/user',userRouter);
-// app.use('/api/product', productRouter);
-// app.use('/api/cart', cartRouter);
-// app.use('/api/order', orderRouter);
-// app.get('/',(req,res)=>{
-//     res.send("API working")
-// })
-
-// app.listen(port,()=>console.log('server started on port:'+port))
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -45,6 +15,9 @@ import userRouter from './routes/userRoute.js';
 import productRouter from './routes/productRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
+import projectRouter from './routes/projectRoute.js';
+import clientRouter from './routes/clientRoute.js';
+import messageRouter from './routes/messageRoute.js';
 import { validateBody } from './middleware/validate.js';
 
 const app = express();
@@ -74,10 +47,10 @@ app.use('/api', (req, res, next) => {
 
 const allowedOrigins = new Set([
  
-  'https://sumukhvisuals.com',
-  'https://www.sumukhvisuals.com',
-  'https://admin.sumukhvisuals.com',
-  'https://api.sumukhvisuals.com',
+  
+  'http://localhost:5173',
+  'http://localhost:4000',
+  'http://localhost:5174'
    // allowed production domains
 ]);
 
@@ -98,16 +71,18 @@ app.use(cors({
 
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 300,
+  max: 1000, // Increased from 300 for local development
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  skip: (req) => process.env.NODE_ENV === 'development' // Skip rate limiting in development
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 100, // Increased from 20 for local development
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  skip: (req) => process.env.NODE_ENV === 'development' // Skip rate limiting in development
 });
 
 app.use('/api/', generalLimiter);
@@ -249,6 +224,9 @@ app.use('/api/user', userRouter);
 app.use('/api/product', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
+app.use('/api/project', projectRouter);
+app.use('/api/client', clientRouter);
+app.use('/api/message', messageRouter);
 
 // Debug endpoint to test token verification (disabled in production)
 if (process.env.NODE_ENV !== 'production') {

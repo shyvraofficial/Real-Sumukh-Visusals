@@ -178,7 +178,7 @@ const MyProfile = () => {
                   key={index}
                   className='purchase-item'
                   variants={itemVariants}
-                  whileHover={{ y: -4, boxShadow: '0 8px 16px rgba(0,0,0,0.1)' }}
+                  whileHover={{ opacity: 0.9 }}
                 >
                   <img
                     src={item.images[0].url}
@@ -240,28 +240,28 @@ const MyProfile = () => {
               onClick={() => navigate('/orders')}
               className='action-btn'
             >
-              <span className='action-icon'>📦</span>
+              <span className='action-icon'></span>
               <span>My Purchases</span>
             </button>
             <button
               onClick={() => navigate('/collection')}
               className='action-btn'
             >
-              <span className='action-icon'>🛍️</span>
+              <span className='action-icon'></span>
               <span>Continue Shopping</span>
             </button>
             <button
               onClick={() => navigate('/about')}
               className='action-btn'
             >
-              <span className='action-icon'>ℹ️</span>
+              <span className='action-icon'></span>
               <span>About Us</span>
             </button>
             <button
               onClick={() => navigate('/contact')}
               className='action-btn'
             >
-              <span className='action-icon'>💬</span>
+              <span className='action-icon'></span>
               <span>Contact Support</span>
             </button>
           </div>

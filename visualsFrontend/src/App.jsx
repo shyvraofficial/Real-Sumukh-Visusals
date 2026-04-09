@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom'
 import Portfolio from './pages/Home'
 import Collection from './pages/Collection'
 import About from './pages/About'
@@ -18,10 +18,46 @@ import NewLogin from './pages/NewLogin'
 import FinishLogin from './pages/FinishLogin'
 import Notification from './components/Notification'
 import NotificationProvider from './context/NotificationContext'
+import ClientDashboard from './pages/ClientDashboard'
+import ClientProjectDetail from './pages/ClientProjectDetail'
+import ClientReelDetail from './pages/ClientReelDetail'
+import { mockClientData, mockProjects, mockBillingData } from './data/mockClientData'
 
 const App = () => {
   const location = useLocation()
+  const [clientData, setClientData] = useState(null)
+  const [isLoadingClient, setIsLoadingClient] = useState(true)
+  
+  // Check for existing client session
+  useEffect(() => {
+    const token = localStorage.getItem('clientToken')
+    const savedData = localStorage.getItem('clientData')
+    
+    if (token && savedData) {
+      try {
+        setClientData(JSON.parse(savedData))
+      } catch (err) {
+        console.error('Error loading client data:', err)
+        localStorage.removeItem('clientToken')
+        localStorage.removeItem('clientData')
+      }
+    }
+    
+    setIsLoadingClient(false)
+  }, [])
+  
+  const handleClientLogin = (data) => {
+    setClientData(data)
+  }
+  
+  const handleClientLogout = () => {
+    setClientData(null)
+    localStorage.removeItem('clientToken')
+    localStorage.removeItem('clientData')
+  }
+  
   const isLoginPage = location.pathname === '/login' || location.pathname === '/newlogin' || location.pathname === '/finish-login'
+  const isClientPage = location.pathname.startsWith('/client')
   const isHomePage = location.pathname === '/'
   
   useEffect(() => {
@@ -47,8 +83,9 @@ const App = () => {
         }}
       >
         <Notification />
-        {!isLoginPage && <Navbar />}
+        {!isLoginPage && !isClientPage && <Navbar />}
         <Routes>
+          {/* Main Website Routes */}
           <Route path='/' element={<Portfolio/>} ></Route>
           <Route path='/collection' element={<Collection/>} ></Route>
           <Route path='/about' element={<About/>} ></Route>
@@ -63,8 +100,53 @@ const App = () => {
           <Route path='/profile' element={<MyProfile/>} ></Route>
           <Route path='/privacy' element={<PrivacyPolicy/>} ></Route>
           <Route path='/terms' element={<TermsConditions/>} ></Route>
+          
+          {/* Client Portal Routes */}
+          <Route
+            path='/client/login'
+            element={<Navigate to='/login?mode=client' replace />}
+          />
+          <Route
+            path='/client/dashboard'
+            element={
+              clientData ? (
+                <ClientDashboard
+                  clientData={clientData}
+                  projects={[]}
+                  billingData={mockBillingData}
+                  onLogout={handleClientLogout}
+                />
+              ) : (
+                <Navigate to='/login' replace />
+              )
+            }
+          />
+          <Route
+            path='/client/project/:projectId'
+            element={
+              clientData ? (
+                <ClientProjectDetail 
+                  clientData={clientData} 
+                  projects={mockProjects}
+                  onLogout={handleClientLogout} 
+                />
+              ) : (
+                <Navigate to='/login' replace />
+              )
+            }
+          />
+          <Route
+            path='/client/reel/:projectId/:reelNumber'
+            element={
+              clientData ? (
+                <ClientReelDetail />
+              ) : (
+                <Navigate to='/login' replace />
+              )
+            }
+          />
         </Routes>
-        {!isLoginPage && <Footer />}
+        {!isLoginPage && !isClientPage && <Footer />}
       </div>
     </NotificationProvider>
   )

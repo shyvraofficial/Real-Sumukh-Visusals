@@ -4,6 +4,10 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+body {
+  background-color: #ffffff;
+}
+
 a.active hr{
   display:block;
 }

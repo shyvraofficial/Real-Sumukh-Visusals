@@ -108,6 +108,20 @@ export default function Navbar() {
           </Link>
 
           <div className="nav-auth">
+            {/* Client Portal Link */}
+            <button
+              className="nav-auth-btn"
+              onClick={() => navigate('/client/dashboard')}
+              style={{
+                borderColor: '#8b8b8b',
+                color: '#d4d4d8',
+                fontSize: '13px'
+              }}
+              title="Client Dashboard"
+            >
+              Client Portal
+            </button>
+            
             {isLoggedIn ? (
               <>
                 <button
@@ -184,6 +198,22 @@ export default function Navbar() {
               {item.label}
             </NavLink>
           ))}
+
+          {/* Client Portal Link on Mobile */}
+          <NavLink
+            to="/client/dashboard"
+            className="mobile-nav-item"
+            onClick={() => setIsOpen(false)}
+            style={{
+              color: '#d4d4d8',
+              fontWeight: 500,
+              borderTop: '1px solid #3f3f46',
+              paddingTop: '12px',
+              marginTop: '12px'
+            }}
+          >
+            🎬 Client Portal
+          </NavLink>
 
           {/* Auth on mobile */}
           {isLoggedIn ? (

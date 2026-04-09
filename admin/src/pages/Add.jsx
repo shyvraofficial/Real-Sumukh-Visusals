@@ -3,6 +3,7 @@ import { assets } from '../assets/assets';
 import axios from 'axios';
 import { backendUrl } from '../App'
 import { NotificationContext } from '../context/NotificationContext';
+import { Button, FormInput, FormSelect, FormTextarea, Card } from '../components/UIComponents';
 
 const Add = ({ token }) => {
   const [image1, setImage1] = useState(false);
@@ -68,21 +69,26 @@ const Add = ({ token }) => {
   }
 
   return (
-    // P-4 for mobile, sm:p-8 for desktop. 
-    // gap-4 ensures elements don't touch each other
-    <form onSubmit={onSubmitHandler} className='flex flex-col w-full items-start gap-4 p-4 sm:p-8'>
-      
-      {/* Images Section */}
-      <div className='w-full'>
-        <p className='mb-2 text-base font-medium text-gray-700'>Upload Image</p>
-        <div className='flex gap-2 flex-wrap'>
-           {[image1, image2, image3, image4].map((img, index) => (
-             <label key={index} htmlFor={`image${index}`} className='cursor-pointer group'>
-                {/* Fixed size containers that don't shrink */}
-                 <div className='w-20 h-20 sm:w-24 sm:h-24 bg-white border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg hover:border-[#333] transition-colors overflow-hidden'>
-                   <img className='w-full h-full object-cover' src={!img ? assets.upload_area : URL.createObjectURL(img)} alt="" />
-                 </div>
-                 <input
+    <div className="p-8">
+      <form onSubmit={onSubmitHandler}>
+        
+        {/* Images Section */}
+        <Card className="mb-8">
+          <h2 className="text-xl font-light text-white mb-6">Product Images</h2>
+          <p className="text-gray-400 text-sm mb-4">Upload up to 4 images (max 3MB each)</p>
+          <div className='flex gap-4 flex-wrap'>
+            {[image1, image2, image3, image4].map((img, index) => (
+              <label key={index} htmlFor={`image${index}`} className='cursor-pointer group'>
+                <div className='w-28 h-28 bg-gray-700 border-2 border-dashed border-gray-600 flex items-center justify-center rounded-lg hover:border-gray-500 transition-colors overflow-hidden group-hover:bg-gray-650'>
+                  {!img ? (
+                    <div className="text-center">
+                      <p className="text-gray-400 text-xs">Image {index + 1}</p>
+                    </div>
+                  ) : (
+                    <img className='w-full h-full object-cover' src={URL.createObjectURL(img)} alt="" />
+                  )}
+                </div>
+                <input
                   type="file"
                   id={`image${index}`}
                   hidden
@@ -91,123 +97,113 @@ const Add = ({ token }) => {
                     const file = e.target.files && e.target.files[0];
                     if (!file) return;
                     if (file.size > MAX_IMAGE_SIZE) {
-                     showError(`Please upload images under 3MB. Selected file is ${(file.size / (1024 * 1024)).toFixed(1)}MB`);
-                     e.target.value = '';
-                     return;
+                      showError(`Please upload images under 3MB. Selected file is ${(file.size / (1024 * 1024)).toFixed(1)}MB`);
+                      e.target.value = '';
+                      return;
                     }
                     [setImage1, setImage2, setImage3, setImage4][index](file);
                   }}
-                 />
-               </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Name Input */}
-      <div className='w-full sm:max-w-[500px]'>
-        <p className='mb-2 text-base font-medium text-gray-700'>Product name</p>
-        <input 
-          onChange={(e) => setName(e.target.value)} 
-          value={name} 
-          className='w-full px-4 py-2 border border-gray-300 rounded-md focus:border-[#333] outline-none transition-colors' 
-          type="text" 
-          placeholder='Type here' 
-          required 
-        />
-      </div>
-
-      {/* Description Input */}
-      <div className='w-full sm:max-w-[500px]'>
-        <p className='mb-2 text-base font-medium text-gray-700'>Product description</p>
-        <textarea 
-          onChange={(e) => setDescription(e.target.value)} 
-          value={description} 
-          className='w-full px-4 py-2 border border-gray-300 rounded-md focus:border-[#333] outline-none min-h-[100px] transition-colors' 
-          placeholder='Write content here' 
-          required 
-        />
-      </div>
-
-      {/* Download Link Input */}
-      <div className='w-full sm:max-w-[500px]'>
-        <p className='mb-2 text-base font-medium text-gray-700'>Drive Download Link (for digital products)</p>
-        <input 
-          onChange={(e) => setDownloadLink(e.target.value)} 
-          value={downloadLink} 
-          className='w-full px-4 py-2 border border-gray-300 rounded-md focus:border-[#333] outline-none transition-colors' 
-          type="url" 
-          placeholder='https://drive.google.com/...' 
-        />
-        <p className='text-xs text-gray-500 mt-1'>Leave empty if not a digital product</p>
-      </div>
-
-      {/* DEEP ANALYSE FIX:
-         Using 'flex-col' for mobile (stacks items vertically)
-         Using 'sm:flex-row' for desktop (puts them in a line)
-      */}
-      <div className='flex flex-col sm:flex-row gap-4 w-full sm:gap-8'>
-        
-        <div className='w-full'>
-          <p className='mb-2 text-base font-medium text-gray-700'>Category</p>
-          <select 
-            onChange={(e) => setCategory(e.target.value)} 
-            value={category} 
-            className='w-full px-4 py-2 border border-gray-300 rounded-md focus:border-[#333] outline-none'
-            required
-          >
-            <option value="">Select category</option>
-            {categoryOptions.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
+                />
+              </label>
             ))}
-          </select>
-        </div>
+          </div>
+        </Card>
 
-        <div className='w-full'>
-          <p className='mb-2 text-base font-medium text-gray-700'>Sub Category</p>
-          <select 
-            onChange={(e) => setSubCategory(e.target.value)} 
-            value={subCategory} 
-            className='w-full px-4 py-2 border border-gray-300 rounded-md focus:border-[#333] outline-none'
-            required
-          >
-            <option value="">Select sub category</option>
-            {subCategoryOptions.map((subCat) => (
-              <option key={subCat} value={subCat}>{subCat}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className='w-full sm:w-auto'>
-          <p className='mb-2 text-base font-medium text-gray-700'>Price</p>
-          <input 
-            onChange={(e) => setPrice(e.target.value)} 
-            value={price} 
-            className='w-full sm:w-[150px] px-4 py-2 border border-gray-300 rounded-md focus:border-[#333] outline-none' 
-            type="number" 
-            placeholder="25" 
+        {/* Product Details Section */}
+        <Card className="mb-8">
+          <h2 className="text-xl font-light text-white mb-6">Product Details</h2>
+          
+          <FormInput
+            label="Product Name"
+            placeholder="e.g., Cinematic Transition Pack"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             required
           />
+
+          <FormTextarea
+            label="Product Description"
+            placeholder="Describe the product features and details..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={5}
+            required
+          />
+
+          <FormInput
+            label="Download Link (Optional)"
+            placeholder="https://drive.google.com/..."
+            type="url"
+            value={downloadLink}
+            onChange={(e) => setDownloadLink(e.target.value)}
+          />
+        </Card>
+
+        {/* Classification Section */}
+        <Card className="mb-8">
+          <h2 className="text-xl font-light text-white mb-6">Classification</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <FormSelect
+                label="Category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                options={categoryOptions}
+                required
+              />
+            </div>
+            <div>
+              <FormSelect
+                label="Sub Category"
+                value={subCategory}
+                onChange={(e) => setSubCategory(e.target.value)}
+                options={subCategoryOptions}
+                required
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* Pricing Section */}
+        <Card className="mb-8">
+          <h2 className="text-xl font-light text-white mb-6">Pricing & Status</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <FormInput
+              label="Price (₹)"
+              placeholder="e.g., 999"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+            />
+            
+            <div className="flex items-end">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input 
+                  onChange={() => setBestseller(prev => !prev)} 
+                  checked={bestseller} 
+                  type="checkbox" 
+                  className='w-5 h-5 rounded accent-white' 
+                />
+                <span className='text-gray-300 font-medium'>Mark as Bestseller</span>
+              </label>
+            </div>
+          </div>
+        </Card>
+
+        {/* Form Actions */}
+        <div className="flex gap-4">
+          <Button type="submit" variant="primary" size="lg">
+            Add Product
+          </Button>
+          <Button type="reset" variant="secondary" size="lg">
+            Clear Form
+          </Button>
         </div>
-      </div>
-
-      {/* Bestseller Checkbox */}
-      <div className='flex gap-2 mt-2 items-center'>
-        <input 
-          onChange={() => setBestseller(prev => !prev)} 
-          checked={bestseller} 
-          type="checkbox" 
-          id='bestseller' 
-          className='w-5 h-5 accent-[#333]' 
-        />
-        <label className='cursor-pointer font-medium text-gray-700 text-base' htmlFor="bestseller">Add to bestseller</label>
-      </div>
-
-      {/* Submit Button - Full width on mobile, fixed on desktop */}
-      <button type="submit" className='w-full sm:w-32 py-3 mt-2 bg-black text-white font-bold rounded-md hover:bg-[#333] transition-colors'>
-        ADD
-      </button>
-
-    </form>
+      </form>
+    </div>
   )
 }
 

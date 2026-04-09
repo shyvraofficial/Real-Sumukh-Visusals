@@ -3,6 +3,7 @@ import axios from 'axios';
 import { NotificationContext } from '../context/NotificationContext';
 import { ShopContext } from '../context/ShopContext';
 import { handleGoogleLogin } from '../Config';
+import { authClient } from '../services/clientAPI';
 import './Login.css';
 
 const Login = () => {
@@ -49,9 +50,23 @@ const Login = () => {
   // Google Login
   const handleGoogleClick = async () => {
     try {
-      const idToken = await handleGoogleLogin(setError);
-      setToken(idToken);
-      localStorage.setItem('token', idToken);
+      const userInfo = await handleGoogleLogin(setError);
+      
+      // Auto-create/update client in MongoDB
+      try {
+        await authClient(userInfo.uid, userInfo.email, userInfo.name, userInfo.avatar);
+      } catch (clientErr) {
+        console.error('Failed to create/update client profile:', clientErr);
+        // Continue anyway - client will still be logged in
+      }
+      
+      // Store token
+      setToken(userInfo.token);
+      localStorage.setItem('token', userInfo.token);
+      localStorage.setItem('firebaseUID', userInfo.uid);
+      localStorage.setItem('userEmail', userInfo.email);
+      localStorage.setItem('userName', userInfo.name); // Store user's display name from Google
+      
       success('Logged in successfully!');
     } catch (err) {
       console.error('Google login error:', err);
@@ -88,11 +103,21 @@ const Login = () => {
   // Auto-Redirect if logged in
   useEffect(() => {
     if (token) {
-      const redirectPath = localStorage.getItem('lastVisitedPath') || localStorage.getItem('redirectAfterLogin');
-      const loginPaths = ['/login', '/newlogin', '/finish-login'];
-      const target = redirectPath && !loginPaths.includes(redirectPath) ? redirectPath : '/';
-      localStorage.removeItem('redirectAfterLogin');
-      navigate(target);
+      // Check if this is a client login (from /client/login)
+      const searchParams = new URLSearchParams(window.location.search);
+      const isClientMode = searchParams.get('mode') === 'client';
+      
+      if (isClientMode) {
+        // Redirect to client dashboard
+        navigate('/client/dashboard');
+      } else {
+        // Regular shop login - redirect to previous page or home
+        const redirectPath = localStorage.getItem('lastVisitedPath') || localStorage.getItem('redirectAfterLogin');
+        const loginPaths = ['/login', '/newlogin', '/finish-login'];
+        const target = redirectPath && !loginPaths.includes(redirectPath) ? redirectPath : '/';
+        localStorage.removeItem('redirectAfterLogin');
+        navigate(target);
+      }
     }
   }, [token, navigate]);
 
