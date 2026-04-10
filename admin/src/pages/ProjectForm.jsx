@@ -47,26 +47,17 @@ export default function ProjectForm() {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        console.log('Fetching clients from:', `${backendUrl}/api/client/all`);
         const res = await axios.get(`${backendUrl}/api/client/all`);
-        console.log('Clients response:', res.data);
         
         // Handle both response formats
         if (res.data.success && res.data.clients) {
           setClients(res.data.clients);
-          console.log('Loaded clients:', res.data.clients);
         } else if (Array.isArray(res.data)) {
           setClients(res.data);
-          console.log('Loaded clients (array):', res.data);
         } else if (Array.isArray(res.data.clients)) {
           setClients(res.data.clients);
         }
       } catch (error) {
-        console.error('Failed to fetch clients:', error.message);
-        if (error.response) {
-          console.error('Response status:', error.response.status);
-          console.error('Response data:', error.response.data);
-        }
         setClients([]);
       } finally {
         setLoadingClients(false);
@@ -83,9 +74,7 @@ export default function ProjectForm() {
     if (isEditMode && !existingProject) {
       const fetchProject = async () => {
         try {
-          console.log('📍 Fetching project from API:', `${backendUrl}/api/project/admin/${id}`);
           const response = await axios.get(`${backendUrl}/api/project/admin/${id}`);
-          console.log('✅ Project fetched:', response.data);
           
           if (response.data) {
             // Backend returns the project object directly
@@ -105,7 +94,6 @@ export default function ProjectForm() {
             setSelectedClientId(project.clientId || '');
           }
         } catch (error) {
-          console.error('❌ Failed to fetch project:', error);
         }
       };
 
@@ -123,7 +111,12 @@ export default function ProjectForm() {
   const handleClientSelect = (e) => {
     const clientId = e.target.value;
     setSelectedClientId(clientId);
-    // Don't auto-fill client name - let admin enter it manually
+    
+    // Find the selected client and auto-fill the email
+    const selectedClient = clients.find(c => c._id === clientId);
+    if (selectedClient) {
+      setManualEmail(selectedClient.email);
+    }
   };
 
   const validateForm = () => {
@@ -221,10 +214,14 @@ export default function ProjectForm() {
       };
 
       // Add client info
-      if (selectedClientId) {
-        projectData.clientId = selectedClientId;
-      } else if (useManualEmail) {
+      if (manualEmail.trim()) {
         projectData.clientEmail = manualEmail.trim();
+      } else if (selectedClientId) {
+        // Fallback: find client in list and get email
+        const selectedClient = clients.find(c => c._id === selectedClientId);
+        if (selectedClient) {
+          projectData.clientEmail = selectedClient.email;
+        }
       }
 
       // Call backend API
@@ -244,7 +241,6 @@ export default function ProjectForm() {
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.message || 'Failed to save project';
       setErrors({ submit: errorMsg });
-      console.error('Error saving project:', error);
     } finally {
       setIsSaving(false);
     }
@@ -400,13 +396,21 @@ export default function ProjectForm() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <FormInput
-                label="Deadline"
-                name="deadline"
+              <label className="block text-gray-300 text-sm font-medium mb-2">
+                Deadline
+                <span className="text-gray-400 ml-1">*</span>
+              </label>
+              <input
                 type="date"
+                name="deadline"
                 value={formData.deadline}
                 onChange={handleInputChange}
                 required
+                className="w-full border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-gray-600 focus:ring-1 focus:ring-gray-600 transition-colors"
+                style={{ 
+                  backgroundColor: '#131313',
+                  colorScheme: 'dark'
+                }}
               />
               {errors.deadline && <p className="text-gray-400 text-xs mt-1">{errors.deadline}</p>}
             </div>

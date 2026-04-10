@@ -25,32 +25,24 @@ const MyProfile = () => {
     try {
       setLoading(true);
       if (!token) {
-        console.log('No token, redirecting to login');
         navigate('/login');
         return;
       }
-
-      console.log('Loading profile with token:', token);
 
       // Load user profile
       const userResponse = await axios.get(`${backendUrl}/api/user/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      console.log('Profile response:', userResponse.data);
-
       if (userResponse.data.success) {
         setUserData(userResponse.data.user);
       } else {
-        console.error('Profile fetch failed:', userResponse.data.message);
       }
 
       // Load recent orders
       const orderResponse = await axios.post(`${backendUrl}/api/order/userOrders`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
-      console.log('Orders response:', orderResponse.data);
 
       if (orderResponse.data.success) {
         let allOrderItems = [];
@@ -67,10 +59,6 @@ const MyProfile = () => {
         setOrderData(allOrderItems);
       }
     } catch (error) {
-      console.error('Profile load error:', error);
-      if (error.response) {
-        console.error('Error response:', error.response.data);
-      }
     } finally {
       setLoading(false);
     }

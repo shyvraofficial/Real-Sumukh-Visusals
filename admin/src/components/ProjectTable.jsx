@@ -45,12 +45,81 @@ export default function ProjectTable({ projects, onEdit, onDelete }) {
         const progressPercent = totalReels > 0 ? (deliveredReels / totalReels) * 100 : 0;
 
         return (
-          <button
+          <div
             key={projectId}
+            className="group relative w-full text-left p-3 sm:p-4 rounded-lg border border-white/10 bg-gray-900/30 hover:border-white/20 hover:bg-gray-900/50 transition-all cursor-pointer"
             onClick={() => navigate(`/projects/${projectId}`)}
-            className="w-full text-left p-4 rounded-lg border border-white/10 bg-gray-900/30 hover:border-white/20 hover:bg-gray-900/50 transition-all cursor-pointer"
           >
-            <div className="grid grid-cols-12 gap-4 items-center">
+            {/* Mobile Layout */}
+            <div className="md:hidden space-y-3">
+              {/* Top Row: Project Name + Status */}
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold truncate" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+                    {project.projectName}
+                  </h3>
+                  <p className="text-gray-400 text-xs mt-1" style={{ fontFamily: 'Outfit' }}>
+                    {project.clientName}
+                  </p>
+                </div>
+                <span 
+                  className="inline-block text-xs font-bold px-2 py-1 rounded whitespace-nowrap flex-shrink-0"
+                  style={{
+                    backgroundColor: colors.bg,
+                    color: colors.text === 'text-white' ? 'white' : '#1f1f1f',
+                    fontFamily: 'Outfit'
+                  }}
+                >
+                  {project.status || 'Pending'}
+                </span>
+              </div>
+
+              {/* Reels Progress */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-300 font-medium whitespace-nowrap">{deliveredReels}/{totalReels}</span>
+                <div className="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full transition-all rounded-full"
+                    style={{ 
+                      width: `${progressPercent}%`,
+                      backgroundColor: progressPercent === 100 ? '#7fb987' : '#7ba3d0'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Bottom Row: Deadline + Payment */}
+              <div className="flex items-center justify-between text-xs text-gray-300">
+                <p style={{ fontFamily: 'Outfit' }}>
+                  {project.deadline 
+                    ? new Date(project.deadline).toLocaleDateString('en-IN', { 
+                        month: 'short', 
+                        day: 'numeric'
+                      })
+                    : 'N/A'
+                  }
+                </p>
+                <p className="font-medium" style={{ fontFamily: 'Outfit' }}>
+                  {paymentStatus}
+                </p>
+              </div>
+
+              {/* Delete Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (window.confirm(`Delete "${project.projectName}"?`)) {
+                    onDelete(projectId);
+                  }
+                }}
+                className="w-full px-3 py-1.5 rounded-lg text-xs font-medium text-red-400 border border-red-400/30 hover:bg-red-400/10 transition-colors"
+              >
+                Delete Project
+              </button>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden md:grid grid-cols-12 gap-4 items-center">
               {/* Project Name & Client */}
               <div className="col-span-3">
                 <h3 className="text-white font-semibold truncate" style={{ fontFamily: 'Plus Jakarta Sans' }}>
@@ -121,8 +190,8 @@ export default function ProjectTable({ projects, onEdit, onDelete }) {
                 </p>
               </div>
 
-              {/* Arrow Indicator */}
-              <div className="col-span-1 text-right flex items-center justify-end gap-2">
+              {/* Arrow Indicator + Delete */}
+              <div className="col-span-1 text-right flex items-center justify-end gap-3">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -138,7 +207,7 @@ export default function ProjectTable({ projects, onEdit, onDelete }) {
                 <span className="text-gray-500 text-lg">→</span>
               </div>
             </div>
-          </button>
+          </div>
         );
       })}
     </div>

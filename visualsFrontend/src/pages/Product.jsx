@@ -29,7 +29,6 @@ const Product = () => {
       }
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.log('Share error:', error);
       }
     }
   };

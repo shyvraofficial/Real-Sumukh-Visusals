@@ -212,7 +212,7 @@ export default function Navbar() {
               marginTop: '12px'
             }}
           >
-            🎬 Client Portal
+            Client Portal
           </NavLink>
 
           {/* Auth on mobile */}

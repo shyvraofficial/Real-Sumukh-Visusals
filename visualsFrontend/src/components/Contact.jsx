@@ -71,7 +71,6 @@ const Contact = () => {
         setSubmitted(false)
       }, 2000)
     } catch (err) {
-      console.error('Email send error:', err)
       showError('Unable to send message. Please try again')
     }
   }

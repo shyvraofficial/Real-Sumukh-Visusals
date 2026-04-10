@@ -72,7 +72,6 @@ const Contacts = () => {
         setSubmitted(false)
       }, 2000)
     } catch (err) {
-      console.error('Email send error:', err)
       showError('Unable to send message. Please try again')
     }
   }
@@ -130,7 +129,6 @@ const Contacts = () => {
       success('Thank you! Your message has been sent via email')
       setFormData({ name: '', email: '', phone: '', message: '' })
     } catch (err) {
-      console.error('Email send error:', err)
       showError('Unable to send message. Please try again')
     }
   }

@@ -39,7 +39,6 @@ const AdminReelChat = ({ projectId, reelNumber, adminName = 'Sumukh' }) => {
       setMessages(response.data.messages || []);
       setError(null);
     } catch (err) {
-      console.error('Failed to fetch messages:', err);
       setError('Failed to load messages');
     } finally {
       setIsLoading(false);
@@ -69,7 +68,6 @@ const AdminReelChat = ({ projectId, reelNumber, adminName = 'Sumukh' }) => {
         setMessages([...messages, response.data.message]);
       }
     } catch (err) {
-      console.error('Failed to send message:', err);
       setError('Failed to send message');
     } finally {
       setIsSending(false);

@@ -19,7 +19,6 @@ const List = ({ token }) => {
         showError(response.data.message || 'Unable to load products')
       }
     } catch (error) {
-      console.error(error)
       showError('Unable to load products')
     }
   }
@@ -42,7 +41,6 @@ const List = ({ token }) => {
         showError(response.data.message || 'Unable to remove product');
       }
     } catch (error) {
-      console.error(error);
       showError(error.response?.data?.message || 'Unable to remove product');
     }
   };

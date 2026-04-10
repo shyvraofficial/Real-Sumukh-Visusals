@@ -28,7 +28,6 @@ const PlaceOrder = () => {
       order_id:order.id,
       receipt:order.receipt,
       handler:async (response)=>{
-        console.log(response)
         try{
           const {data}=await axios.post(`${backendUrl}/api/order/verifyRazorpay`, response, { headers: { Authorization: `Bearer ${token}` } });
           if(data.success){
@@ -95,7 +94,6 @@ const PlaceOrder = () => {
           break;
       }
     } catch (error) {
-      console.error(error);
       showError('Unable to place order. Please try again');
     }
   };

@@ -50,17 +50,13 @@ appleProvider.setCustomParameters({
 // 🔴 Generic Social Login (returns token)
 export const socialLogin = async (provider) => {
   try {
-    console.log('Opening popup for provider:', provider.providerId);
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
     const idToken = await user.getIdToken();
-    console.log('Got token:', idToken);
     return idToken;
   } catch (error) {
     if (error.code === 'auth/popup-closed-by-user') {
-      console.warn('User closed the popup');
     } else {
-      console.error('Social login error:', error);
     }
     throw error;
   }
@@ -69,11 +65,9 @@ export const socialLogin = async (provider) => {
 // 🔴 Google Login Handler
 export const handleGoogleLogin = async (setError) => {
   try {
-    console.log('Google login started');
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
     const idToken = await user.getIdToken();
-    console.log('Google login successful:', user.email);
     if (setError) setError('');
     
     // Return user info along with token
@@ -85,7 +79,6 @@ export const handleGoogleLogin = async (setError) => {
       avatar: user.photoURL,
     };
   } catch (err) {
-    console.error('Google Login Error:', err);
     const errorMessage = err.code === 'auth/popup-closed-by-user' 
       ? 'Login cancelled' 
       : 'Google Sign-In failed. ' + err.message;
@@ -97,15 +90,12 @@ export const handleGoogleLogin = async (setError) => {
 // 🔴 Microsoft Login Handler
 export const handleMicrosoftLogin = async (setError) => {
   try {
-    console.log('Microsoft login started');
     const result = await signInWithPopup(auth, microsoftProvider);
     const user = result.user;
     const idToken = await user.getIdToken();
-    console.log('Microsoft login successful:', user.email);
     if (setError) setError('');
     return idToken;
   } catch (err) {
-    console.error('Microsoft Login Error:', err);
     const errorMessage = err.code === 'auth/popup-closed-by-user' 
       ? 'Login cancelled' 
       : 'Microsoft Sign-In failed. ' + err.message;
@@ -117,15 +107,12 @@ export const handleMicrosoftLogin = async (setError) => {
 // 🔴 Apple Login Handler
 export const handleAppleLogin = async (setError) => {
   try {
-    console.log('Apple login started');
     const result = await signInWithPopup(auth, appleProvider);
     const user = result.user;
     const idToken = await user.getIdToken();
-    console.log('Apple login successful:', user.email);
     if (setError) setError('');
     return idToken;
   } catch (err) {
-    console.error('Apple Login Error:', err);
     const errorMessage = err.code === 'auth/popup-closed-by-user' 
       ? 'Login cancelled' 
       : 'Apple Sign-In failed. ' + err.message;

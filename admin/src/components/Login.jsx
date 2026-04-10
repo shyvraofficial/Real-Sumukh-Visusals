@@ -24,7 +24,6 @@ const Login = ({setToken}) => {
             }
         }
         catch (error){
-            console.log(error);
             showError('Unable to login. Please try again')
         }
     }

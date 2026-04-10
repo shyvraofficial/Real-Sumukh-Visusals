@@ -33,7 +33,6 @@ const Orders = () => {
       }
     }
     catch (error) {
-      console.error(error)
     }
     finally {
       setLoading(false)
@@ -59,15 +58,10 @@ const Orders = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      console.log('Download response:', response.data);
-      
       if (response.data.success) {
         window.open(response.data.downloadLink, '_blank');
-      } else {
-        console.error('Download failed:', response.data.message);
       }
     } catch (error) {
-      console.error('Download error:', error.response?.data || error.message);
     }
   }
 

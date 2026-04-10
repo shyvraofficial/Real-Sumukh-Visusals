@@ -24,7 +24,7 @@ const ClientReelDetail = () => {
         setProject(response.data.project);
         setReel(response.data.reel);
       } catch (err) {
-        console.error('Failed to fetch reel:', err);
+
         setError('Failed to load reel details');
       } finally {
         setIsLoading(false);

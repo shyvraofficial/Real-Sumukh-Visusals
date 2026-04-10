@@ -99,7 +99,6 @@ export const ClientProjectCard = ({
       }
     }
   } catch (error) {
-    console.warn('Invalid deadline:', deadline);
   }
 
   return (

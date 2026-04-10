@@ -17,9 +17,7 @@ export default function ProjectsList() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        console.log('📍 Fetching projects from:', `${backendUrl}/api/project/admin/all`);
         const response = await axios.get(`${backendUrl}/api/project/admin/all`);
-        console.log('✅ Projects fetched:', response.data);
         
         if (response.data.success) {
           setProjects(response.data.projects || []);
@@ -27,7 +25,6 @@ export default function ProjectsList() {
           setProjects(response.data);
         }
       } catch (error) {
-        console.error('❌ Failed to fetch projects:', error);
         setProjects([]);
       } finally {
         setLoading(false);
@@ -56,15 +53,12 @@ export default function ProjectsList() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this project?')) {
       try {
-        console.log('🗑 Deleting project:', id);
         const response = await axios.delete(`${backendUrl}/api/project/admin/${id}`);
-        console.log('✅ Project deleted:', response.data);
         
         // Remove from local state
         setProjects(projects.filter(p => (p._id || p.id) !== id));
         alert('Project deleted successfully');
       } catch (error) {
-        console.error('❌ Failed to delete project:', error);
         alert('Failed to delete project: ' + (error.response?.data?.message || error.message));
       }
     }
@@ -79,25 +73,26 @@ export default function ProjectsList() {
   ];
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-4xl font-light text-white mb-2">Projects</h1>
-          <p className="text-gray-400">Manage all client projects</p>
+          <h1 className="text-3xl sm:text-4xl font-light text-white mb-2">Projects</h1>
+          <p className="text-xs sm:text-sm text-gray-400">Manage all client projects</p>
         </div>
         <Button 
           variant="primary" 
           size="lg"
           onClick={() => navigate('/projects/new')}
+          className="w-full sm:w-auto"
         >
           + New Project
         </Button>
       </div>
 
       {/* Filters */}
-      <div className="border border-gray-700 rounded-lg p-6 mb-8" style={{ backgroundColor: '#131313' }}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="border border-gray-700 rounded-lg p-4 sm:p-6 mb-8" style={{ backgroundColor: '#131313' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <FormInput
             label="Search Projects"
             placeholder="Search by project name or client..."
@@ -129,7 +124,7 @@ export default function ProjectsList() {
       </div>
 
       {/* Results Summary */}
-      <p className="text-gray-400 text-sm mb-6">
+      <p className="text-gray-400 text-xs sm:text-sm mb-6">
         {loading ? 'Loading projects...' : `Showing ${filteredProjects.length} of ${projects.length} projects`}
       </p>
 

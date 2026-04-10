@@ -54,7 +54,6 @@ const ClientGoogleLogin = ({ onLogin }) => {
       navigate('/client/dashboard');
     } catch (err) {
       setError(err.message || 'Failed to login with Google');
-      console.error('Google login error:', err);
     } finally {
       setIsLoading(false);
     }

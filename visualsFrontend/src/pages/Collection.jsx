@@ -15,9 +15,6 @@ const Collection = () => {
   const [sortType, setSortType] = useState('relevant')
   const [expandedFilters, setExpandedFilters] = useState({ category: true, type: true })
 
-  console.log('Products from context:', products)
-  console.log('FilterProducts state:', filterProducts)
-
   useEffect(() => {
     if (products && products.length > 0) {
       setFilterProducts(products)

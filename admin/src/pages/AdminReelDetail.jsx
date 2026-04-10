@@ -36,22 +36,15 @@ export default function AdminReelDetail() {
   const statuses = ['Not Started', 'Getting Started', 'In Progress', 'Revision Phase', 'Successfully Delivered'];
 
   useEffect(() => {
-    console.log('🔍 AdminReelDetail mounted');
-    console.log('📍 Route params:', { projectId, reelNumber });
-    console.log('🔗 Backend URL:', backendUrl);
-    
     const fetchProject = async () => {
       try {
         if (!projectId || !reelNumber) {
-          console.error('❌ Missing route parameters:', { projectId, reelNumber });
           setError(`Invalid URL parameters: projectId=${projectId}, reelNumber=${reelNumber}`);
           setIsLoading(false);
           return;
         }
 
-        console.log('📥 Fetching project:', projectId, 'reel:', reelNumber);
         const url = `${backendUrl}/api/project/admin/${projectId}`;
-        console.log('🔗 Full API URL:', url);
         
         setIsLoading(true);
         
@@ -61,14 +54,12 @@ export default function AdminReelDetail() {
         });
         
         const response = await axiosInstance.get(url);
-        console.log('✅ Project fetched:', response.data);
         
         const projectData = response.data;
         setProject(projectData);
 
         // Find the reel
         const foundReel = projectData.reels?.find(r => r.reelNumber === parseInt(reelNumber));
-        console.log('🔍 Looking for reel #' + reelNumber, 'Found:', foundReel);
         
         if (foundReel) {
           setReel(foundReel);
@@ -82,13 +73,6 @@ export default function AdminReelDetail() {
           setError(`Reel #${reelNumber} not found. Available reels: ${availableReels}`);
         }
       } catch (err) {
-        console.error('❌ Failed to fetch project:', err);
-        console.error('Error name:', err.name);
-        console.error('Error code:', err.code);
-        if (err.response) {
-          console.error('Response status:', err.response.status);
-          console.error('Response data:', err.response.data);
-        }
         
         let errorMsg = err.message;
         if (err.code === 'ECONNABORTED') {
@@ -138,7 +122,6 @@ export default function AdminReelDetail() {
       // Clear success message after 4 seconds
       setTimeout(() => setSaveStatus(null), 4000);
     } catch (err) {
-      console.error('Failed to save reel:', err);
       setSaveStatus('error');
       
       // Scroll to top to show error

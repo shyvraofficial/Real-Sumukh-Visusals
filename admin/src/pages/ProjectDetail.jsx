@@ -20,21 +20,19 @@ export default function ProjectDetail() {
   const [isEditingBilling, setIsEditingBilling] = useState(false);
   const [editData, setEditData] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [isAddingReels, setIsAddingReels] = useState(false);
   const [reelsToAdd, setReelsToAdd] = useState(1);
   const [saveStatus, setSaveStatus] = useState(null); // 'success', 'error', null
+  const [isReelsCollapsed, setIsReelsCollapsed] = useState(true); // Default collapsed
 
   // Fetch project from API if not in context
   useEffect(() => {
     if (!contextProject) {
       const fetchProject = async () => {
         try {
-          console.log('📍 Fetching project detail from API:', `${backendUrl}/api/project/admin/${id}`);
           const response = await axios.get(`${backendUrl}/api/project/admin/${id}`);
-          console.log('✅ Project detail fetched:', response.data);
           setProject(response.data);
         } catch (error) {
-          console.error('❌ Failed to fetch project:', error);
+          // Error fetching project
         } finally {
           setLoading(false);
         }
@@ -51,10 +49,7 @@ export default function ProjectDetail() {
     if (project) {
       const hasReels = hasReelsStructure(project);
       if (hasReels) {
-        console.log('📊 All project reels:', project.reels);
-        console.log('📈 Reel statuses breakdown:', project.reels.map(r => ({ reelNumber: r.reelNumber, status: r.status })));
         const calculatedMetrics = calculateProjectMetrics(project);
-        console.log('📊 Calculated metrics:', calculatedMetrics);
         setMetrics(calculatedMetrics);
       }
       setEditData({
@@ -98,7 +93,6 @@ export default function ProjectDetail() {
       
       // Use id from route params (guaranteed to be correct)
       const actualProjectId = id || projectId;
-      console.log('📍 Saving reel update to backend...', { projectId: actualProjectId, reelNumber, updates });
       
       if (!actualProjectId) {
         throw new Error('Project ID not found');
@@ -124,8 +118,6 @@ export default function ProjectDetail() {
         updatedProject
       );
       
-      console.log('✅ Reel saved successfully:', response.data);
-      
       // Update both context and local state
       setProject(updatedProject);
       updateProject(actualProjectId, updatedProject);
@@ -135,7 +127,6 @@ export default function ProjectDetail() {
       // Clear success message after 3 seconds
       setTimeout(() => setSaveStatus(null), 3000);
     } catch (error) {
-      console.error('❌ Failed to save reel:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus(null), 5000);
     } finally {
@@ -151,16 +142,12 @@ export default function ProjectDetail() {
         ...project,
         ...editData,
       };
-
-      console.log('📍 Saving metadata to backend...', { projectId: id, updates: editData });
       
       // Save to backend
       const response = await axios.put(
         `${backendUrl}/api/project/admin/${id}`,
         updatedProject
       );
-      
-      console.log('✅ Metadata saved successfully:', response.data);
       
       // Update both context and local state
       setProject(updatedProject);
@@ -173,7 +160,6 @@ export default function ProjectDetail() {
       
       setTimeout(() => setSaveStatus(null), 3000);
     } catch (error) {
-      console.error('❌ Failed to save metadata:', error);
       setSaveStatus('error');
       
       // Scroll to top to show error
@@ -207,16 +193,12 @@ export default function ProjectDetail() {
         paidAmount,
         remainingAmount: remainingAmount,
       };
-
-      console.log('📍 Saving billing to backend...', { projectId: id, totalAmount, paidAmount, remainingAmount });
       
       // Save to backend
       const response = await axios.put(
         `${backendUrl}/api/project/admin/${id}`,
         updatedProject
       );
-      
-      console.log('✅ Billing saved successfully:', response.data);
       
       // Update both context and local state
       setProject(updatedProject);
@@ -229,45 +211,12 @@ export default function ProjectDetail() {
       
       setTimeout(() => setSaveStatus(null), 3000);
     } catch (error) {
-      console.error('❌ Failed to save billing:', error);
       setSaveStatus('error');
       
       // Scroll to top to show error
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
       setTimeout(() => setSaveStatus(null), 5000);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleAddReels = async () => {
-    if (reelsToAdd <= 0) return;
-
-    const currentReelCount = project.reels ? project.reels.length : 0;
-    const newReels = Array.from({ length: reelsToAdd }, (_, i) => ({
-      reelNumber: currentReelCount + i + 1,
-      status: 'Getting Started',
-      note: null,
-      link: null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }));
-
-    const updatedProject = {
-      ...project,
-      totalReels: currentReelCount + reelsToAdd,
-      reels: [...(project.reels || []), ...newReels],
-      updatedAt: new Date().toISOString(),
-    };
-
-    setIsSaving(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 300));
-      updateProject(id, updatedProject);
-      setMetrics(calculateProjectMetrics(updatedProject));
-      setIsAddingReels(false);
-      setReelsToAdd(1);
     } finally {
       setIsSaving(false);
     }
@@ -562,26 +511,24 @@ export default function ProjectDetail() {
         )}
       </Card>
 
-      {/* Add More Reels Section */}
+      {/* Add More Reels Section - FRESH IMPLEMENTATION */}
       {hasReels && (
         <Card className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-light text-white">Add More Reels</h2>
-            <Button
-              variant={isAddingReels ? 'ghost' : 'secondary'}
-              size="sm"
-              onClick={() => setIsAddingReels(!isAddingReels)}
+            <button
+              onClick={() => setIsReelsCollapsed(!isReelsCollapsed)}
+              className="text-gray-400 hover:text-white transition-colors text-2xl leading-none"
             >
-              {isAddingReels ? '✕ Cancel' : '➕ Add Reels'}
-            </Button>
+              {isReelsCollapsed ? '▶' : '▼'}
+            </button>
           </div>
+          
+          <p className="text-gray-400 text-sm mb-6">
+            Currently have <span className="text-white font-medium">{project.totalReels || project.reels?.length || 0}</span> reel{((project.totalReels || project.reels?.length || 0) !== 1) ? 's' : ''} total.
+          </p>
 
-          {!isAddingReels ? (
-            <p className="text-gray-400 text-sm">
-              Currently have <span className="text-white font-medium">{project.totalReels}</span> reel{project.totalReels !== 1 ? 's' : ''} total. 
-              Click "Add Reels" to create more.
-            </p>
-          ) : (
+          {!isReelsCollapsed && (
             <div className="space-y-4">
               <FormInput
                 label="Number of Reels to Add"
@@ -589,32 +536,85 @@ export default function ProjectDetail() {
                 min="1"
                 max="50"
                 value={reelsToAdd}
-                onChange={(e) => setReelsToAdd(Math.max(1, parseInt(e.target.value) || 1))}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === '' || val === '0') {
+                    setReelsToAdd('');
+                  } else {
+                    setReelsToAdd(Math.max(1, parseInt(val) || 1));
+                  }
+                }}
+                onBlur={() => {
+                  if (reelsToAdd === '' || reelsToAdd < 1) {
+                    setReelsToAdd(1);
+                  }
+                }}
               />
+              
               <div className="p-3 bg-gray-700 rounded-lg">
                 <p className="text-gray-300 text-sm">
-                  This will create <span className="text-white font-medium">{reelsToAdd}</span> new reel{reelsToAdd !== 1 ? 's' : ''} with status "Not Started"
+                  This will create <span className="text-white font-medium">{reelsToAdd}</span> new reel{reelsToAdd !== 1 ? 's' : ''} with status "Getting Started"
                 </p>
                 <p className="text-gray-400 text-xs mt-2">
-                  Total reels after: <span className="text-white">{project.totalReels + reelsToAdd}</span>
+                  Total after: <span className="text-white">{(project.totalReels || project.reels?.length || 0) + reelsToAdd}</span>
                 </p>
               </div>
+
               <div className="flex gap-3">
                 <Button
                   variant="primary"
-                  onClick={handleAddReels}
-                  disabled={isSaving}
-                >
-                  {isSaving ? 'Adding...' : 'Add Reels'}
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    setIsAddingReels(false);
-                    setReelsToAdd(1);
+                  onClick={async () => {
+                    if (reelsToAdd <= 0) {
+                      alert('Please enter a valid number');
+                      return;
+                    }
+
+                    setIsSaving(true);
+                    setSaveStatus(null);
+
+                    try {
+                      const currentReelCount = project.reels?.length || 0;
+                      const newReels = Array.from({ length: reelsToAdd }, (_, i) => ({
+                        reelNumber: currentReelCount + i + 1,
+                        status: 'Not Started',
+                        note: '',
+                        link: null,
+                        name: '',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                      }));
+
+                      const updatedProject = {
+                        ...project,
+                        totalReels: currentReelCount + reelsToAdd,
+                        reels: [...(project.reels || []), ...newReels],
+                        updatedAt: new Date().toISOString(),
+                      };
+
+                      const response = await axios.put(
+                        `${backendUrl}/api/project/admin/${id}`,
+                        updatedProject,
+                        { headers: { 'Content-Type': 'application/json' } }
+                      );
+
+                      // Update local state
+                      setProject(response.data);
+                      updateProject(id, response.data);
+                      setMetrics(calculateProjectMetrics(response.data));
+                      setReelsToAdd(1);
+                      setSaveStatus('success');
+
+                      setTimeout(() => setSaveStatus(null), 3000);
+                    } catch (error) {
+                      setSaveStatus('error');
+                      setTimeout(() => setSaveStatus(null), 5000);
+                    } finally {
+                      setIsSaving(false);
+                    }
                   }}
+                  disabled={isSaving || reelsToAdd <= 0}
                 >
-                  Cancel
+                  {isSaving ? 'Adding...' : `Add ${reelsToAdd} Reel${reelsToAdd !== 1 ? 's' : ''}`}
                 </Button>
               </div>
             </div>

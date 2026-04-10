@@ -37,7 +37,6 @@ const App = () => {
       try {
         setClientData(JSON.parse(savedData))
       } catch (err) {
-        console.error('Error loading client data:', err)
         localStorage.removeItem('clientToken')
         localStorage.removeItem('clientData')
       }

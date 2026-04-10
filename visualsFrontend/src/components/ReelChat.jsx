@@ -46,13 +46,7 @@ const ReelChat = ({ projectId, reelNumber, clientData = {} }) => {
   const clientName = getClientName();
   
   const auth = getAuth();
-  console.log('🧑 ReelChat - Client Name Resolved:', {
-    clientName,
-    firebaseDisplayName: auth.currentUser?.displayName,
-    storedUserName,
-    email: userEmail,
-    clientDataName: clientData?.name,
-  });
+
 
   // Fetch messages on mount
   useEffect(() => {
@@ -72,7 +66,6 @@ const ReelChat = ({ projectId, reelNumber, clientData = {} }) => {
       setMessages(response.data.messages || []);
       setError(null);
     } catch (err) {
-      console.error('Failed to fetch messages:', err);
       setError('Failed to load messages');
     } finally {
       setIsLoading(false);
@@ -95,9 +88,6 @@ const ReelChat = ({ projectId, reelNumber, clientData = {} }) => {
         senderAvatar: clientData?.avatar,
       };
       
-      console.log('📨 Sending message from:', clientName, '| Firebase User:', getAuth().currentUser?.displayName);
-      console.log('📨 Full message data:', messageData);
-
       const response = await messageAPI.sendMessage(projectId, reelNumber, messageData);
 
       if (response.data.success) {
@@ -105,7 +95,6 @@ const ReelChat = ({ projectId, reelNumber, clientData = {} }) => {
         setMessages([...messages, response.data.message]);
       }
     } catch (err) {
-      console.error('Failed to send message:', err);
       setError('Failed to send message');
     } finally {
       setIsSending(false);
@@ -203,11 +192,9 @@ const ReelChat = ({ projectId, reelNumber, clientData = {} }) => {
                           alt={message.senderName}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            console.warn('❌ Avatar failed to load:', message.senderAvatar);
                             e.target.style.display = 'none';
                           }}
                           onLoad={() => {
-                            console.log('✅ Avatar loaded:', message.senderAvatar);
                           }}
                         />
                       ) : null}

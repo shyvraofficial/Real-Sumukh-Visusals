@@ -129,6 +129,8 @@ export const createProject = async (req, res) => {
   try {
     let { clientId, clientEmail, clientName, projectName, projectType, packageType, deadline, totalReels, totalAmount, paidAmount, remainingAmount, deliveryTime, notes } = req.body;
 
+    console.log('📝 [CREATE PROJECT] Request received with totalReels:', totalReels, 'Type:', typeof totalReels);
+
     // If clientEmail provided instead of clientId, look up the client
     if (!clientId && clientEmail) {
       const client = await Client.findOne({ email: clientEmail.toLowerCase().trim() });
@@ -159,13 +161,19 @@ export const createProject = async (req, res) => {
       }
     }
 
-    const reels = Array.from({ length: totalReels }, (_, i) => ({
+    const totalReelsNum = Number(totalReels);
+    console.log('🔢 [CREATE PROJECT] Converted totalReels to number:', totalReelsNum);
+
+    const reels = Array.from({ length: totalReelsNum }, (_, i) => ({
       reelNumber: i + 1,
       status: 'Not Started',
       note: '',
       link: null,
       name: '',
     }));
+
+    console.log('🎬 [CREATE PROJECT] Generated reels array length:', reels.length);
+    console.log('📊 [CREATE PROJECT] Reel numbers (first 5 and last 5):', reels.slice(0, 5).map(r => r.reelNumber), '...', reels.slice(-5).map(r => r.reelNumber));
 
     const project = new Project({
       clientId,
@@ -175,7 +183,7 @@ export const createProject = async (req, res) => {
       projectType,
       packageType,
       deadline,
-      totalReels,
+      totalReels: totalReelsNum,
       totalAmount,
       paidAmount,
       remainingAmount,
@@ -185,12 +193,15 @@ export const createProject = async (req, res) => {
     });
 
     await project.save();
+    console.log('✅ [CREATE PROJECT] Project saved. Reels in DB:', project.reels.length, 'totalReels field:', project.totalReels);
+
     res.status(201).json({
       success: true,
       message: 'Project created successfully',
       project,
     });
   } catch (error) {
+    console.error('❌ [CREATE PROJECT] Error:', error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -199,14 +210,27 @@ export const createProject = async (req, res) => {
 export const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Project.findByIdAndUpdate(id, req.body, { new: true });
+    console.log('📍 updateProject called:', { id });
+    console.log('📦 Request body:', JSON.stringify(req.body, null, 2));
+    
+    const project = await Project.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
 
     if (!project) {
+      console.log('❌ Project not found:', id);
       return res.status(404).json({ message: 'Project not found' });
     }
 
+    console.log('✅ Project updated successfully:', { 
+      projectId: project._id,
+      totalReels: project.totalReels,
+      reelsCount: project.reels?.length,
+      reelNumbers: project.reels?.map(r => r.reelNumber)
+    });
+    
     res.json(project);
   } catch (error) {
+    console.error('❌ Error updating project:', error.message);
+    console.error('Full error:', error);
     res.status(400).json({ message: error.message });
   }
 };

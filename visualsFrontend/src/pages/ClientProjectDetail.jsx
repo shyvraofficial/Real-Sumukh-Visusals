@@ -43,7 +43,6 @@ const ClientProjectDetail = ({
           setProject(response.data);
         }
       } catch (error) {
-        console.error('Error fetching project:', error);
         // Try to find in props as fallback
         if (projects.length > 0) {
           const foundProject = projects.find(p => p._id === projectId || p.id === projectId);

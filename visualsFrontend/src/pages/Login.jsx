@@ -40,7 +40,6 @@ const Login = () => {
         showError(res.data.message || 'Unable to send sign-in link');
       }
     } catch (err) {
-      console.error(err);
       showError('Failed to send login link. Please try again.');
     } finally {
       setSendingLink(false);
@@ -56,7 +55,6 @@ const Login = () => {
       try {
         await authClient(userInfo.uid, userInfo.email, userInfo.name, userInfo.avatar);
       } catch (clientErr) {
-        console.error('Failed to create/update client profile:', clientErr);
         // Continue anyway - client will still be logged in
       }
       
@@ -69,7 +67,7 @@ const Login = () => {
       
       success('Logged in successfully!');
     } catch (err) {
-      console.error('Google login error:', err);
+
       showError('Google sign-in failed. Please try again.');
     }
   };
@@ -93,7 +91,6 @@ const Login = () => {
         showError(res.data.message || 'Unable to resend link');
       }
     } catch (err) {
-      console.error(err);
       showError('Failed to resend link. Please try again.');
     } finally {
       setResending(false);

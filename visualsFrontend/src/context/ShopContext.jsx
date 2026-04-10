@@ -32,7 +32,6 @@ const ShopContextProvider = (props) => {
             });
             return normalized;
         } catch (err) {
-            console.log('Failed to read cart from storage', err);
             return {};
         }
     });
@@ -49,7 +48,6 @@ const ShopContextProvider = (props) => {
                 setProducts(response.data.products);
             }
         } catch (error) {
-            console.log('Error fetching products:', error);
         }
     };
 
@@ -78,12 +76,10 @@ const ShopContextProvider = (props) => {
                         { headers: { Authorization: `Bearer ${token}` } }
                     );
                 } catch (error) {
-                    console.log('Error adding to cart (server):', error?.response?.data || error.message || error);
                 }
             }
             return true;
         } catch (err) {
-            console.error('addToCart unexpected error:', err);
             return false;
         }
     };
@@ -102,7 +98,6 @@ const ShopContextProvider = (props) => {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
             } catch (error) {
-                console.log('Error updating cart:', error);
             }
         }
     };
@@ -170,7 +165,6 @@ const ShopContextProvider = (props) => {
                     }
                 });
 
-                console.log('getUserCart: server:', normalizedServer, 'local:', normalizedLocal, 'mergedChoice:', persistToServer ? 'sum' : 'prefer-server', 'result:', merged);
                 setCartItems(merged);
 
                 // Persist merged cart back to server only when explicitly requested
@@ -193,12 +187,10 @@ const ShopContextProvider = (props) => {
                             }
                         }
                     } catch (err) {
-                        console.log('Error syncing merged cart to server:', err);
                     }
                 }
             }
         } catch (error) {
-            console.log('Error getting cart:', error);
         }
     };
 
@@ -225,7 +217,6 @@ const ShopContextProvider = (props) => {
                                 { headers: { Authorization: `Bearer ${token}` } }
                             );
                         } catch (err) {
-                            console.log('Error removing invalid cart item from server:', err);
                         }
                     }
                 }
@@ -258,7 +249,6 @@ const ShopContextProvider = (props) => {
             const target = redirectPath && !loginPaths.includes(redirectPath) ? redirectPath : '/';
             navigate(target);
         } catch (error) {
-            console.error('Logout error:', error);
         }
     };
 
@@ -332,7 +322,6 @@ const ShopContextProvider = (props) => {
         try {
             localStorage.setItem('cartItems', JSON.stringify(cartItems));
         } catch (err) {
-            console.log('Failed to save cart to storage', err);
         }
     }, [cartItems]);
 

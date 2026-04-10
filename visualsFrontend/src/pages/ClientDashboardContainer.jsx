@@ -20,7 +20,6 @@ const ClientDashboardContainer = ({ clientData, onLogout = () => {} }) => {
     }
   } catch (error) {
     // ProjectContext not available, use mock data or prop
-    console.log('ProjectContext not available, using provided projects or defaults');
   }
 
   // Fallback: use projects from props or mock data

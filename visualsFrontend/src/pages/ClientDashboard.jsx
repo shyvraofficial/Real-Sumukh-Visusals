@@ -25,6 +25,8 @@ const ClientDashboard = ({
   const [isLoading, setIsLoading] = useState(initialIsLoading);
   const [error, setError] = useState(null);
   const [showAllRecentReels, setShowAllRecentReels] = useState(false);
+  const [showAllDeliveredReels, setShowAllDeliveredReels] = useState(false);
+  const [showAllActiveReels, setShowAllActiveReels] = useState(false);
   const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
 
   useEffect(() => {
@@ -34,29 +36,14 @@ const ClientDashboard = ({
     
     // Redirect to login if not authenticated
     if (!token) {
-      console.log('🔐 No token found - redirecting to login');
       navigate('/login');
-      return;
-    }
-    
-    console.log('📍 Token check:', { 
-      hasToken: !!token, 
-      firebaseUID, 
-      userEmail,
-      token: token ? token.substring(0, 20) + '...' : 'none' 
-    });
-    
-    if (!token) {
-      console.warn('⚠️ No token found');
       return;
     }
 
     // Fetch client profile
     const fetchClientProfile = async () => {
       try {
-        console.log('📍 Fetching client profile from:', `${backendUrl}/api/client/uid/${firebaseUID}`);
         const response = await axios.get(`${backendUrl}/api/client/uid/${firebaseUID}`);
-        console.log('✅ Client profile fetched:', response.data);
         
         if (response.data.success && response.data.client) {
           setClientData({
@@ -65,8 +52,6 @@ const ClientDashboard = ({
           });
         }
       } catch (err) {
-        console.error('❌ Failed to fetch client profile:', err);
-        console.error('Error response:', err.response?.data);
         // Use default client data on error
       }
     };
@@ -76,29 +61,15 @@ const ClientDashboard = ({
       try {
         setIsLoading(true);
         setError(null);
-        console.log('🔄 Fetching projects from API...');
-        console.log('📍 API URL:', `${backendUrl}/api/project/client`);
-        console.log('📍 Token being sent:', token.substring(0, 20) + '...');
         
         const response = await projectAPI.getClientProjects();
-        console.log('✅ API Response received:', response);
-        console.log('✅ Projects data:', response.data);
-        console.log('📊 Number of projects:', Array.isArray(response.data) ? response.data.length : 'unknown');
         
         if (Array.isArray(response.data)) {
-          console.log('✅ Setting projects to state:', response.data);
           setProjects(response.data);
         } else {
-          console.warn('⚠️ Response data is not an array:', response.data);
           setProjects(response.data?.projects || []);
         }
       } catch (err) {
-        console.error('❌ Failed to fetch projects:', err);
-        console.error('Error details:', {
-          message: err.message,
-          status: err.response?.status,
-          data: err.response?.data,
-        });
         setProjects(initialProjects);
         if (err.response?.status !== 401) {
           setError('Failed to load projects');
@@ -112,17 +83,9 @@ const ClientDashboard = ({
     fetchProjects();
   }, [backendUrl]);
 
-  // Log current state for debugging
   const token = localStorage.getItem('token');
   const firebaseUID = localStorage.getItem('firebaseUID');
-  
-  console.log('🔍 CURRENT STATE:', {
-    isLoggedIn: !!token,
-    isLoading,
-    projectsCount: projects.length,
-    clientName: clientData?.name,
-    firebaseUID,
-  });
+  const userEmail = localStorage.getItem('userEmail');
 
   const formatCurrency = (amount = 0) =>
     `₹${Number(amount || 0).toLocaleString('en-IN')}`;
@@ -303,12 +266,10 @@ const ClientDashboard = ({
 
   // Show "not logged in" state - redirect to login
   if (!token) {
-    console.log('❌ Not logged in - redirecting to login');
     return null; // Will redirect via useEffect or Navbar
   }
 
   if (isLoading) {
-    console.log('⏳ Loading projects...');
     return (
       <div className="min-h-screen bg-black">
         <Navbar />
@@ -322,7 +283,6 @@ const ClientDashboard = ({
   }
 
   if (projects.length === 0) {
-    console.log('📭 RENDER: No projects - showing empty state');
     return (
       <div className="min-h-screen bg-black">
         <Navbar />
@@ -369,7 +329,6 @@ const ClientDashboard = ({
   }
 
   // Show projects (main view)
-  console.log('✅ RENDER: Showing projects | Count:', projects.length);
   return (
     <div className="min-h-screen bg-black">
       <Navbar />
@@ -384,6 +343,11 @@ const ClientDashboard = ({
             </h1>
 
             <div className="mt-4 space-y-2">
+              {userEmail && (
+                <p className="text-sm text-[#a8a8a8]">
+                  {userEmail}
+                </p>
+              )}
               {projects.length === 0 ? (
                 <p className="text-[#d6d6d6] text-sm sm:text-base">
                   You do not have any active projects at the moment.
@@ -447,7 +411,8 @@ const ClientDashboard = ({
                 const revisionPhaseReels = recentReelUpdates.filter(r => r.status === 'Revision Phase' || r.status === 'revision');
                 const inProgressReels = recentReelUpdates.filter(r => r.status === 'In Progress' || r.status === 'in_progress');
                 const gettingStartedReels = recentReelUpdates.filter(r => r.status === 'Getting Started' || r.status === 'getting_started');
-                const activeReels = [...revisionPhaseReels, ...inProgressReels, ...gettingStartedReels].slice(0, 5);
+                const allActiveReels = [...revisionPhaseReels, ...inProgressReels, ...gettingStartedReels];
+                const activeReels = showAllActiveReels ? allActiveReels : allActiveReels.slice(0, 5);
                 
                 return activeReels.map((reel, idx) => {
                 const statusDescriptions = {
@@ -580,6 +545,24 @@ const ClientDashboard = ({
                 });
               })()}
             </div>
+
+            {/* View More for Active Reels */}
+            {(() => {
+              const revisionPhaseReels = recentReelUpdates.filter(r => r.status === 'Revision Phase' || r.status === 'revision');
+              const inProgressReels = recentReelUpdates.filter(r => r.status === 'In Progress' || r.status === 'in_progress');
+              const gettingStartedReels = recentReelUpdates.filter(r => r.status === 'Getting Started' || r.status === 'getting_started');
+              const allActiveReels = [...revisionPhaseReels, ...inProgressReels, ...gettingStartedReels];
+              return allActiveReels.length > 5 ? (
+                <div className="mt-4 flex justify-center">
+                  <button
+                    onClick={() => setShowAllActiveReels(!showAllActiveReels)}
+                    className="inline-flex items-center justify-center rounded-xl border border-white/12 px-6 py-2.5 text-sm font-semibold text-[#f5f5f5] transition-colors hover:bg-white hover:text-black"
+                  >
+                    {showAllActiveReels ? 'Show less' : 'View more'}
+                  </button>
+                </div>
+              ) : null;
+            })()}
           </section>
         )}
 
@@ -590,7 +573,8 @@ const ClientDashboard = ({
 
             <div className="space-y-3">
               {(() => {
-                const deliveredReels = recentReelUpdates.filter(r => r.status === 'Successfully Delivered').slice(0, 5);
+                const allDeliveredReels = recentReelUpdates.filter(r => r.status === 'Successfully Delivered');
+                const deliveredReels = showAllDeliveredReels ? allDeliveredReels : allDeliveredReels.slice(0, 3);
                 
                 return deliveredReels.map((reel, idx) => {
                 const statusColors = {
@@ -664,13 +648,13 @@ const ClientDashboard = ({
             </div>
 
             {/* View More for Delivered Reels */}
-            {recentReelUpdates.filter(r => r.status === 'Successfully Delivered').length > 5 && (
+            {recentReelUpdates.filter(r => r.status === 'Successfully Delivered').length > 3 && (
               <div className="mt-4 flex justify-center">
                 <button
+                  onClick={() => setShowAllDeliveredReels(!showAllDeliveredReels)}
                   className="inline-flex items-center justify-center rounded-xl border border-white/12 px-6 py-2.5 text-sm font-semibold text-[#f5f5f5] transition-colors hover:bg-white hover:text-black"
-                  disabled
                 >
-                  View more
+                  {showAllDeliveredReels ? 'Show less' : 'View more'}
                 </button>
               </div>
             )}
@@ -931,7 +915,7 @@ const ClientDashboard = ({
               </div>
 
               {/* Reels Delivered */}
-              <div className="border-t border-white/10 pt-4">
+              <div className="border-t border-white/10 pt-4 mb-6">
                 <p className="text-sm text-[#bdbdbd]">
                   {totals.totalDelivered}/{totals.totalReels} reels delivered
                   {totals.totalDelivered === totals.totalReels && totals.totalReels > 0 
@@ -940,6 +924,48 @@ const ClientDashboard = ({
                     ? ` • ${totals.totalReels - totals.totalDelivered} remaining` 
                     : ''}
                 </p>
+              </div>
+
+              {/* Project-wise Breakdown */}
+              <div className="border-t border-white/10 pt-6">
+                <h3 className="text-sm font-semibold text-white mb-4">Project-wise Breakdown</h3>
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {projects.length === 0 ? (
+                    <p className="text-xs text-[#888]">No projects yet</p>
+                  ) : (
+                    projects.map((project) => {
+                      const deliveredReels = project.reels?.filter(r => r.status === 'Successfully Delivered').length || 0;
+                      const totalReels = project.reels?.length || project.totalReels || 0;
+                      const percentage = totalReels > 0 ? ((deliveredReels / totalReels) * 100).toFixed(0) : 0;
+                      
+                      return (
+                        <div key={project._id} className="border border-white/5 bg-[#0a0a0a] rounded-lg p-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-white mb-1">{project.projectName}</p>
+                              <p className="text-xs text-[#888]">{deliveredReels}/{totalReels} reels • {percentage}% done</p>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-3 gap-2 text-xs">
+                            <div>
+                              <p className="text-[#888] mb-1">Total</p>
+                              <p className="text-white font-semibold">{formatCurrency(project.totalAmount || 0)}</p>
+                            </div>
+                            <div>
+                              <p className="text-[#888] mb-1">Paid</p>
+                              <p className="text-[#7fb987] font-semibold">{formatCurrency(project.paidAmount || 0)}</p>
+                            </div>
+                            <div>
+                              <p className="text-[#888] mb-1">Due</p>
+                              <p className="text-[#f4b860] font-semibold">{formatCurrency(project.remainingAmount || 0)}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
               </div>
             </div>
           </section>

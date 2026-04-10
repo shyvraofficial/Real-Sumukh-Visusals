@@ -60,7 +60,6 @@ const FinishLogin = () => {
             setCartItems(mergeRes.data.cartData);
           }
         } catch (mergeErr) {
-          console.log('Merge pending cart failed:', mergeErr?.response?.data || mergeErr.message || mergeErr);
         }
 
         success('You are now logged in!');
@@ -70,7 +69,6 @@ const FinishLogin = () => {
         localStorage.removeItem('redirectAfterLogin');
         navigate(redirectPath);
       } catch (error) {
-        console.error('FinishLogin error:', error);
         showError('This login link has expired. Please request a new one.');
         navigate('/login');
       }
