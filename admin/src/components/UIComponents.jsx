@@ -44,6 +44,24 @@ export function FormInput({
 }) {
   const displayValue = value !== null && value !== undefined ? String(value) : '';
   
+  const handleWheel = (e) => {
+    if (type === 'number') {
+      e.currentTarget.blur();
+    }
+    if (props.onWheel) {
+      props.onWheel(e);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (type === 'number' && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+      e.preventDefault();
+    }
+    if (props.onKeyDown) {
+      props.onKeyDown(e);
+    }
+  };
+  
   return (
     <div className={`mb-5 ${className}`}>
       {label && (
@@ -57,6 +75,8 @@ export function FormInput({
         placeholder={placeholder}
         value={displayValue}
         onChange={onChange}
+        onWheel={handleWheel}
+        onKeyDown={handleKeyDown}
         required={required}
         className="w-full border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-gray-600 focus:ring-1 focus:ring-gray-600 transition-colors"
         style={{ backgroundColor: '#131313' }}

@@ -31,9 +31,9 @@ export default function ProjectForm() {
     projectType: '',
     packageType: '',
     deadline: '',
-    totalReels: 0,
-    totalAmount: 0,
-    paidAmount: 0,
+    totalReels: '',
+    totalAmount: '',
+    paidAmount: '',
     deliveryTime: '',
     notes: '',
   });
@@ -74,7 +74,8 @@ export default function ProjectForm() {
 
   // Fetch project from API if editing and not in context
   useEffect(() => {
-    if (isEditMode && !existingProject) {
+    // Only initialize once, don't re-run on every render
+    if (isEditMode && !existingProject && !hasInitializedRef.current) {
       const fetchProject = async () => {
         try {
           const response = await axios.get(`${backendUrl}/api/project/admin/${id}`);
@@ -88,21 +89,23 @@ export default function ProjectForm() {
               projectType: project.projectType || '',
               packageType: project.packageType || '',
               deadline: project.deadline ? project.deadline.split('T')[0] : '',
-              totalReels: project.totalReels || 0,
-              totalAmount: project.totalAmount || 0,
-              paidAmount: project.paidAmount || 0,
+              totalReels: String(project.totalReels || ''),
+              totalAmount: String(project.totalAmount || ''),
+              paidAmount: String(project.paidAmount || ''),
               deliveryTime: project.deliveryTime || '',
               notes: project.notes || '',
             });
             setSelectedClientId(project.clientId || '');
+            hasInitializedRef.current = true;
           }
         } catch (error) {
+          hasInitializedRef.current = true;
         }
       };
 
       fetchProject();
     }
-  }, [isEditMode, id, existingProject, backendUrl]);
+  }, [isEditMode, id, backendUrl]);
 
   // Load existing project data if editing (from context) - only once on mount
   useEffect(() => {
@@ -183,6 +186,7 @@ export default function ProjectForm() {
 
   const handleNumberChange = (e) => {
     const { name, value } = e.target;
+    // Keep as string - don't convert to number
     setFormData(prev => ({
       ...prev,
       [name]: value
