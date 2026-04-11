@@ -45,24 +45,24 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
-// const allowedOrigins = new Set([
-//   'https://sumukhvisuals.com',
-//   'https://www.sumukhvisuals.com',
-//   'https://api.sumukhvisuals.com',
-//   'https://www.api.sumukhvisuals.com',
-//   'https://admin.sumukhvisuals.com',
-//   'https://www.admin.sumukhvisuals.com'
-//    // allowed production domains
-// ]);
-
 const allowedOrigins = new Set([
+  'https://sumukhvisuals.com',
+  'https://www.sumukhvisuals.com',
+  'https://api.sumukhvisuals.com',
+  'https://www.api.sumukhvisuals.com',
+  'https://admin.sumukhvisuals.com',
+  'https://www.admin.sumukhvisuals.com'
+   // allowed production domains
+]);
+
+// const allowedOrigins = new Set([
  
   
-  'http://localhost:5173',
-  'http://localhost:4000',
-  'http://localhost:5174'
-   // allowed development domains
-]);
+//   'http://localhost:5173',
+//   'http://localhost:4000',
+//   'http://localhost:5174'
+//    // allowed development domains
+// ]);
 
 app.use(cors({
   origin: (origin, callback) => {
