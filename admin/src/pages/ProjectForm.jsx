@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ProjectContext } from '../context/ProjectContext';
@@ -42,6 +42,9 @@ export default function ProjectForm() {
   const [isSaving, setIsSaving] = useState(false);
   const [loadingClients, setLoadingClients] = useState(true);
   const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
+  
+  // Track if we've already initialized form data from existingProject
+  const hasInitializedRef = useRef(false);
 
   // Fetch clients on mount
   useEffect(() => {
@@ -101,12 +104,13 @@ export default function ProjectForm() {
     }
   }, [isEditMode, id, existingProject, backendUrl]);
 
-  // Load existing project data if editing (from context)
+  // Load existing project data if editing (from context) - only once on mount
   useEffect(() => {
-    if (existingProject) {
+    if (existingProject && !hasInitializedRef.current) {
       setFormData(existingProject);
+      hasInitializedRef.current = true;
     }
-  }, [existingProject]);
+  }, []); // Empty dependency array - only run once on mount
 
   const handleClientSelect = (e) => {
     const clientId = e.target.value;
@@ -275,7 +279,6 @@ export default function ProjectForm() {
               onClick={() => {
                 setUseManualEmail(false);
                 setSelectedClientId('');
-                setFormData(prev => ({ ...prev, clientName: '' }));
               }}
               className={`px-4 py-2 rounded transition ${!useManualEmail ? 'bg-white text-black' : 'bg-gray-700 text-white'}`}
             >
@@ -286,6 +289,7 @@ export default function ProjectForm() {
               onClick={() => {
                 setUseManualEmail(true);
                 setSelectedClientId('');
+                setManualEmail('');
               }}
               className={`px-4 py-2 rounded transition ${useManualEmail ? 'bg-white text-black' : 'bg-gray-700 text-white'}`}
             >
