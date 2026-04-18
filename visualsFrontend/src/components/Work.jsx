@@ -8,17 +8,17 @@ const Work = () => {
   {
     id: 1,
     title: 'Street Style Motion',
-    instagramUrl: 'https://www.instagram.com/reel/DO3MxoPj03v/',
+    instagramUrl: 'https://www.instagram.com/reel/DWWX8isk52I/?igsh=anNoZHNlenUycms4',
   },
   {
     id: 2,
     title: 'Powerlifting Motivation',
-    instagramUrl: 'https://www.instagram.com/reel/DM-3cXbPO6U/',
+    instagramUrl: 'https://www.instagram.com/reel/DXLm-66k6py/?igsh=Z203YTV0dmEzMmI=',
   },
   {
     id: 3,
     title: 'Visual Effects Flow', 
-    instagramUrl: 'https://www.instagram.com/reel/DPAAukYk38l/',
+    instagramUrl: 'https://www.instagram.com/reel/DWasj2ukyx1/?igsh=MW44bjl5eTd4Y2ZjcA==',
   },
   {
     id: 4,
@@ -33,7 +33,7 @@ const Work = () => {
   {
     id: 6,
     title: 'Bodybuilding Showcase',
-    instagramUrl: 'https://www.instagram.com/reel/DNLiF1Fv69j/',
+    instagramUrl: 'https://www.instagram.com/reel/DWWX8isk52I/?igsh=anNoZHNlenUycms4',
   }
  ]
 
