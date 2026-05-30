@@ -9,6 +9,7 @@ import { backendUrl } from '../App';
 const Login = ({setToken}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const { error: showError } = useContext(NotificationContext);
     
     const onSubmitHandler = async (e) =>{
@@ -34,11 +35,20 @@ const Login = ({setToken}) => {
         <form onSubmit={onSubmitHandler}>
             <div className='mb-3 min-w-72'>
                 <p className='text-sm font-medium text-gray-700 mb-2'>Email Address</p>
-                <input onChange={(e) => setEmail(e.target.value)} value={email} className='rounded-md w-full px-3 py-2 border border-gray-300 outline-none' type="email" placeholder='your@email.com' required/>
+                <input onChange={(e) => setEmail(e.target.value)} value={email} className='rounded-md w-full px-3 py-2 border border-gray-300 outline-none text-black' type="email" placeholder='your@email.com' required/>
             </div>
             <div className='mb-3 min-w-72'>
                 <p className='text-sm font-medium text-gray-700 mb-2'>Password</p>
-                <input onChange={(e) => setPassword(e.target.value)} value={password} className='rounded-md w-full px-3 py-2 border border-gray-300 outline-none' type="password" placeholder='Enter your password' required />
+                <div className='relative'>
+                  <input onChange={(e) => setPassword(e.target.value)} value={password} className='rounded-md w-full px-3 py-2 border border-gray-300 outline-none text-black pr-10' type={showPassword ? "text" : "password"} placeholder='Enter your password' required />
+                  <button 
+                    type='button' 
+                    onClick={() => setShowPassword(!showPassword)}
+                    className='absolute right-3 top-2 text-gray-600 cursor-pointer text-lg'
+                  >
+                    {showPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
             </div>
             <button className='mt-2 w-full py-2 px-4 rounded-md text-white bg-black' type='submit'>Login</button>
         </form>
