@@ -7,33 +7,33 @@ const Work = () => {
   const projects = [
   {
     id: 1,
-    title: 'Street Style Motion',
+    title: 'Hot Vibes',
     instagramUrl: 'https://www.instagram.com/reel/DWWX8isk52I/?igsh=anNoZHNlenUycms4',
   },
   {
     id: 2,
-    title: 'Powerlifting Motivation',
+    title: 'Prove Them Right',
     instagramUrl: 'https://www.instagram.com/reel/DXLm-66k6py/?igsh=Z203YTV0dmEzMmI=',
   },
   {
     id: 3,
-    title: 'Visual Effects Flow', 
+    title: 'Purification', 
     instagramUrl: 'https://www.instagram.com/reel/DWasj2ukyx1/?igsh=MW44bjl5eTd4Y2ZjcA==',
   },
   {
     id: 4,
-    title: 'Urban Apparel Edit',
+    title: 'Sound Design',
     instagramUrl: 'https://www.instagram.com/reel/DO0wwVbj_O7/',
   },
   {
     id: 5,
-    title: 'Clothing Brand Promo',
+    title: 'Before & After Edit',
     instagramUrl: 'https://www.instagram.com/reel/DOrIGFSEj8i/',
   },
   {
     id: 6,
-    title: 'Bodybuilding Showcase',
-    instagramUrl: 'https://www.instagram.com/reel/DWWX8isk52I/?igsh=anNoZHNlenUycms4',
+    title: 'Divine Energy',
+    instagramUrl: 'https://www.instagram.com/reel/DX0qyw_zaD-/?igsh=ODhpbGhwc3h0azV1',
   }
  ]
 
