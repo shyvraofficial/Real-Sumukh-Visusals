@@ -1,8 +1,5 @@
 import React from 'react';
 
-// ============================================================================
-// THEME - Professional monochrome palette
-// ============================================================================
 const THEME = {
   colors: {
     primary: '#ffffff',      // Primary (white)
@@ -12,19 +9,6 @@ const THEME = {
   },
 };
 
-// ============================================================================
-// StatusBadge - Elegant grayscale status indicator
-// ============================================================================
-/**
- * Status Badge Component
- * 
- * Statuses:
- * - "not_started" → Light text, transparent bg, subtle border
- * - "in_progress" → Bold text, light gray bg, thin border
- * - "first_draft_ready" → Semibold text, dark bg, prominent border
- * - "revision_phase" → Semibold text, medium gray bg, no border
- * - "delivered" → Bold text, white bg, black text
- */
 export const StatusBadge = ({ status = 'not_started', size = 'sm' }) => {
   const statusConfig = {
     not_started: {

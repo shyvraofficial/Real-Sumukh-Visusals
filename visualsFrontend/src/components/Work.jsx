@@ -22,8 +22,8 @@ const Work = () => {
   },
   {
     id: 4,
-    title: 'Sound Design',
-    instagramUrl: 'https://www.instagram.com/reel/DO0wwVbj_O7/',
+    title: 'Motion Graphic',
+    instagramUrl: 'https://www.instagram.com/reel/DYSgAutvXwT/',
   },
   {
     id: 5,
@@ -32,8 +32,8 @@ const Work = () => {
   },
   {
     id: 6,
-    title: 'Divine Energy',
-    instagramUrl: 'https://www.instagram.com/reel/DX0qyw_zaD-/?igsh=ODhpbGhwc3h0azV1',
+    title: 'Art',
+    instagramUrl: 'https://www.instagram.com/reel/DYT4SzbvNah/',
   }
  ]
 

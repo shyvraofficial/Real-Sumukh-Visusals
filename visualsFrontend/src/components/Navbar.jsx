@@ -10,6 +10,7 @@ import './Navbar.css';
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
+  const [isReelTheaterActive, setIsReelTheaterActive] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const { token, setToken, setCartItems, showSearch, setShowSearch, getCartCount, cartItems, products, cartCount, logout } = useContext(ShopContext);
   const { success, error: showError } = useContext(NotificationContext);
@@ -37,6 +38,24 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
+  useEffect(() => {
+    const handleReelTheaterVisibility = (event) => {
+      setIsReelTheaterActive(Boolean(event.detail?.hidden));
+    };
+
+    window.addEventListener(
+      'reel-theater-nav-visibility',
+      handleReelTheaterVisibility
+    );
+
+    return () => {
+      window.removeEventListener(
+        'reel-theater-nav-visibility',
+        handleReelTheaterVisibility
+      );
+    };
+  }, []);
+
   const navItems = [
     { label: 'Portfolio', to: '/' },
     { label: 'Shop', to: '/collection' },
@@ -47,7 +66,7 @@ export default function Navbar() {
   
 
   return (
-    <nav className={`navbar ${isHidden ? 'navbar-hidden' : 'navbar-visible'}`}>
+    <nav className={`navbar ${isHidden || isReelTheaterActive ? 'navbar-hidden navbar-reel-hidden' : 'navbar-visible'}`}>
       <div className="navbar-container">
         {/* Logo */}
         <Link to="/">

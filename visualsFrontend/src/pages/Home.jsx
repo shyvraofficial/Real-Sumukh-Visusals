@@ -10,6 +10,8 @@ import Testimonials from '../components/Testimonials'
 import CTA from '../components/CTA'
 import Contact from '../components/Contact'
 import LatestCollection from '../components/LatestCollection'
+import ReelTheater from "../components/ReelTheater";
+
 
 
 const Portfolio = () => {

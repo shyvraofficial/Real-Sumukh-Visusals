@@ -32,6 +32,10 @@
   box-shadow: none;
 }
 
+.navbar-reel-hidden {
+  pointer-events: none;
+}
+
 /* Inner container */
 /* Inner container – taller bar */
 .navbar-container {
