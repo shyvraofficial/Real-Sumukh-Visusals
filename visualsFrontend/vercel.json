@@ -1,8 +1,12 @@
 {
   "routes": [
     {
-      "src": "/favicon.ico",
-      "dest": "/favicon.ico"
+      "src": "/visualicon.png",
+      "dest": "/visualicon.png"
+    },
+    {
+      "src": "/site.webmanifest",
+      "dest": "/site.webmanifest"
     },
     {
       "src": "/assets/(.*)",
